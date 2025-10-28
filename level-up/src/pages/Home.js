@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-// Se extraen todos los datos de los productos a un array de objetos.
 const productsData = {
     "Juegos de mesa": [
         {

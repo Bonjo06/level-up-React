@@ -159,9 +159,9 @@ h1, h2 {
 
 
 #modal-img {
-  max-width: 100%; /* Asegura que la imagen nunca sea más ancha que el modal */
-  height: auto;    /* Mantiene la proporción correcta de la imagen */
-  max-height: 400px; /* Evita que imágenes muy altas ocupen toda la pantalla */
-  object-fit: contain; /* Se asegura que la imagen completa se vea bien */
-  margin-bottom: 1rem; /* Añade un pequeño espacio debajo de la imagen */
+  max-width: 100%; 
+  height: auto;    
+  max-height: 400px; 
+  object-fit: contain; 
+  margin-bottom: 1rem; 
 }

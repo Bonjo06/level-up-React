@@ -59,7 +59,6 @@ describe('Componente Login', () => {
         const passwordInput = screen.getByLabelText('Contraseña');
         const submitButton = screen.getByRole('button', { name: 'Ingresar' });
 
-        // Correo incorrecto
         fireEvent.change(emailInput, { target: { value: 'test@incorrecto.com' } });
         fireEvent.change(passwordInput, { target: { value: 'passValida' } }); 
         await fireEvent.click(submitButton);
@@ -78,7 +77,7 @@ describe('Componente Login', () => {
         
     });
 
-    //Este test esta fallando por karma, pero en la ejecucion de react funciona sin problema
+    //Este test esta fallando por karma, pero en la ejecucion de react no nos da problemas
     xit('inicia sesión si las credenciales son correctas', async () => {
     const userEmail = 'usuario@registrado.com';
     const userPassword = 'password123';
