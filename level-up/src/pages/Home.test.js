@@ -1,6 +1,5 @@
 import React from 'react';
 import { render, screen, fireEvent, within } from '@testing-library/react';
-// Se eliminó import '@testing-library/jest-dom';
 import { BrowserRouter } from 'react-router-dom';
 import Home from './Home';
 
@@ -17,7 +16,7 @@ describe('Componente Home', () => {
     expect(screen.getByText('Juegos de mesa:')).toBeDefined();
   });
 
-  it('muestra el modal con información al hacer clic en una tarjeta de producto', async () => { // Añadido async
+  it('muestra el modal con información al hacer clic en una tarjeta de producto', async () => { 
     render(
       <BrowserRouter>
         <Home />
@@ -27,38 +26,38 @@ describe('Componente Home', () => {
     const cardCatan = screen.getByText(/Catán/i).closest('.producto-card');
     expect(cardCatan).toBeDefined();
 
-    await fireEvent.click(cardCatan); // Añadido await
+    await fireEvent.click(cardCatan); 
 
-    // Busca el modal por su contenido una vez que aparece
-    const modalTitle = await screen.findByRole('heading', { name: 'Catán' }); // Usar findByRole para esperar
+    
+    const modalTitle = await screen.findByRole('heading', { name: 'Catán' }); 
     const modalContent = modalTitle.closest('.modal-content');
 
     expect(modalTitle).toBeDefined();
     expect(modalContent).toBeDefined();
 
-    // Busca dentro del modal
+    
     expect(within(modalContent).getByText(/\$35\.990 clp/)).toBeDefined();
     expect(within(modalContent).getByText(/El clásico juego de estrategia/)).toBeDefined();
   });
 
-  it('cierra el modal al hacer clic en el botón de cerrar', async () => { // Añadido async
+  it('cierra el modal al hacer clic en el botón de cerrar', async () => { 
     render(
       <BrowserRouter>
         <Home />
       </BrowserRouter>
     );
     const cardCatan = screen.getByText(/Catán/i).closest('.producto-card');
-    await fireEvent.click(cardCatan); // Abrir modal
+    await fireEvent.click(cardCatan); 
 
-    const tituloModal = await screen.findByRole('heading', { name: 'Catán' }); // Esperar a que aparezca
+    const tituloModal = await screen.findByRole('heading', { name: 'Catán' }); 
     expect(tituloModal).toBeDefined();
 
-    // Encontrar el botón de cerrar DENTRO del modal para ser más específicos
+    
     const modalContent = tituloModal.closest('.modal-content');
     const botonCerrar = within(modalContent).getByText('×');
-    await fireEvent.click(botonCerrar); // Cerrar modal
+    await fireEvent.click(botonCerrar); 
 
-    // queryBy... no necesita await, verifica que ya no está
+    
     expect(screen.queryByRole('heading', { name: 'Catán' })).toBeNull();
   });
 });

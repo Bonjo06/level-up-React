@@ -6,10 +6,8 @@ import PasswordReset from './PasswordReset';
 
 describe('Componente PasswordReset', () => {
   beforeEach(() => {
-    // Mock global alert
     global.alert = jasmine.createSpy('alert');
 
-    // Mock localStorage
     const store = { 'usuario@existente.com': 'viejaPassword' };
     spyOn(window.localStorage, 'getItem').and.callFake((key) => store[key] || null);
     spyOn(window.localStorage, 'setItem').and.callFake((key, value) => store[key] = value);
@@ -18,7 +16,6 @@ describe('Componente PasswordReset', () => {
   it('renderiza el formulario correctamente', () => {
     render(<BrowserRouter><PasswordReset /></BrowserRouter>);
 
-    // Usamos matchers compatibles con Jasmine en lugar de los matchers de jest-dom
     expect(screen.getByLabelText('Correo electrónico')).toBeDefined();
     expect(screen.getByLabelText('Ingrese nueva contraseña')).toBeDefined();
     expect(screen.getByLabelText('Vuelva a ingresar la nueva contraseña')).toBeDefined();
@@ -75,7 +72,5 @@ describe('Componente PasswordReset', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Recuperar Contraseña' }));
 
     expect(global.alert).toHaveBeenCalledWith('Su contraseña se actualizó con éxito.');
-    // Si el componente navega, debería hacerlo hacia '/iniciarsesion'.
-    // No comprobamos la llamada a useNavigate aquí para evitar redefinir propiedades de módulos en el entorno Karma/Jasmine.
   });
 });
