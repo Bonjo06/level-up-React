@@ -1,52 +1,59 @@
 // karma.conf.js
 module.exports = function(config) {
   config.set({
-    frameworks: ['jasmine'], 
+    frameworks: ['jasmine', 'webpack'], // Mantener webpack aquí
 
-    // Solo dile a Webpack dónde están los tests
     files: [
-      { pattern: 'src/**/*.test.js', watched: false } 
+      'src/setupTests.js',
+      { pattern: 'src/**/*.test.js', watched: false }
     ],
 
-    // Preprocesa los tests con Webpack y genera sourcemaps
     preprocessors: {
-      'src/**/*.test.js': ['webpack', 'sourcemap'] 
+      'src/**/*.test.js': ['webpack', 'sourcemap']
     },
 
-    // Configuración de Webpack para Karma
     webpack: {
-      mode: 'development', 
+      mode: 'development',
+      experiments: {
+        outputModule: true,
+      },
+      output: {
+        module: true,
+      },
       module: {
         rules: [
-          { // Regla para archivos JS/JSX
+          {
             test: /\.(js|jsx)$/,
             exclude: /node_modules/,
             use: {
               loader: 'babel-loader',
               options: {
-                presets: ['@babel/preset-env', '@babel/preset-react'] 
+                presets: ['@babel/preset-env', ['@babel/preset-react', { runtime: 'automatic' }]]
               }
             }
           },
-          { // Regla para CSS (si los necesitas)
+          {
             test: /\.css$/,
             use: ['style-loader', 'css-loader']
           }
         ]
       },
       resolve: {
-        extensions: ['.js', '.jsx'] 
+        extensions: ['.js', '.jsx']
       },
-      devtool: 'inline-source-map' // Mejores sourcemaps
+      devtool: 'inline-source-map'
     },
 
-    // Reduce el ruido de Webpack en la consola
     webpackMiddleware: {
       stats: 'errors-only'
     },
 
-    browsers: ['Edge'], // O 'EdgeHeadless'
-    singleRun: true, 
-    reporters: ['progress'] 
+    // --- CAMBIO AQUÍ ---
+    browsers: ['ChromeHeadless'], // Cambiado de 'Edge' a 'ChromeHeadless'
+    // --- FIN CAMBIO ---
+
+    singleRun: false,
+    reporters: ['progress'],
+    browserNoActivityTimeout: 60000 // Mantener tiempo de espera aumentado
   });
 };
