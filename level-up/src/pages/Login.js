@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import './Login.css';
+import bg from '../assets/images/login-bg.svg';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -22,8 +24,13 @@ function Login() {
   };
 
   return (
-    <div className="bg-light d-flex justify-content-center align-items-center vh-100">
-      <div className="card shadow-lg p-4 rounded-4" style={{ width: '22rem' }}>
+    // Use GIF from public/images/Login.gif as primary background for faster serving;
+    // fall back to the bundled SVG (`bg`) if the GIF is not present.
+    <div
+      className="login-page"
+      style={{ backgroundImage: `url('/images/Login.gif'), url(${bg})` }}
+    >
+      <div className="card shadow-lg p-4 rounded-4 login-card" style={{ width: '22rem' }}>
         <h3 className="text-center mb-4">Iniciar sesión</h3>
         <form onSubmit={handleSubmit}>
           <div className="mb-3">

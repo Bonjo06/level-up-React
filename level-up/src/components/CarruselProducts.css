@@ -1,0 +1,30 @@
+/* src/components/CarruselProducts.css */
+
+/*
+  Hacemos que los puntos de paginación (bullets)
+  sean blancos para que contrasten con el fondo oscuro.
+*/
+.swiper-pagination-bullet {
+  background-color: #f8f9fa; /* Un color claro, casi blanco */
+  opacity: 0.7;
+}
+
+/* El punto activo lo hacemos blanco brillante */
+.swiper-pagination-bullet-active {
+  background-color: #ffffff;
+  opacity: 1;
+}
+
+/*
+  Esto ayuda a que todas las tarjetas (slides)
+  mantengan una altura uniforme, 
+  complementando el 'h-100' de Bootstrap.
+*/
+.swiper-slide {
+  height: auto;
+  display: flex;
+}
+
+.swiper-slide .card {
+  width: 100%;
+}
