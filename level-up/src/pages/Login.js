@@ -1,12 +1,27 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+// 1. Importa 'useEffect' y 'useLocation'
+import React, { useState, useEffect } from 'react';
+// 2. Importa 'useLocation'
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import './Login.css';
+// 3. Importa el SVG de fallback (esto está bien)
 import bg from '../assets/images/login-bg.svg';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  
+  // 4. Obtén 'location'
+  const location = useLocation();
+
+  // 5. Este 'useEffect' recibe mensajes (ej. "Sesión cerrada")
+  useEffect(() => {
+    const message = location.state?.message;
+    if (message) {
+      alert(message); // Muestra el mensaje
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location, navigate]); // Se ejecuta cada vez que la ubicación cambia
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -16,19 +31,20 @@ function Login() {
     }
     const storedPassword = localStorage.getItem(email);
     if (storedPassword && storedPassword === password) {
-      alert('Sesión iniciada correctamente.');
-      navigate('/'); 
+      localStorage.setItem('UsuarioLogeado', email);
+      navigate('/', { state: { message: 'Sesión iniciada correctamente' } }); 
     } else {
       alert('Correo o clave inválidos.');
     }
   };
 
   return (
-    // Use GIF from public/images/Login.gif as primary background for faster serving;
-    // fall back to the bundled SVG (`bg`) if the GIF is not present.
     <div
       className="login-page"
-      style={{ backgroundImage: `url('/images/Login.gif'), url(${bg})` }}
+      // 6. ESTA ES LA CORRECCIÓN:
+      // Se referencia 'Login.jpg' como un string de ruta absoluta '/'.
+      // El navegador lo buscará en 'public/images/Login.jpg'.
+      style={{ backgroundImage: `url('/images/Login.jpg'), url(${bg})` }}
     >
       <div className="card shadow-lg p-4 rounded-4 login-card" style={{ width: '22rem' }}>
         <h3 className="text-center mb-4">Iniciar sesión</h3>
@@ -56,10 +72,12 @@ function Login() {
             />
           </div>
           <div>
-            <Link to="/recuperar-contrasena" className="medium">¿Olvidaste tu contraseña?</Link>
+            <span>¿Olvidaste tu contraseña? </span>
+            <Link to="/recuperar-contrasena" className="medium">Recupérala aquí</Link>
           </div>
           <div>
-            <Link to="/registro" className="medium">Registrarse</Link>
+            <span>¿No tienes una cuenta? </span>
+            <Link to="/registro" className="medium">Registrate aquí</Link>
           </div>
           <button type="submit" className="btn btn-primary w-100 mt-2">Ingresar</button>
         </form>

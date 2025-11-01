@@ -1,42 +1,71 @@
 import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Pagination } from "swiper/modules";
+// 1. Importa Navigation
+import { Autoplay, Pagination, EffectFade, Navigation } from "swiper/modules";
 
+// CSS de Swiper
 import "swiper/css";
 import "swiper/css/pagination";
+import "swiper/css/effect-fade";
+import "swiper/css/navigation"; // 2. Añade el CSS de Navigation
+
+// Tu CSS personalizado
 import "./CarruselProducts.css";
 
-function ProductCarousel({ featured }) {
+function ProductCarousel({ featured, onProductClick }) {
   return (
-    <div className="container my-5">
-      <h2 className="fw-bold text-center mb-4 text-light">🔥 Productos destacados</h2>
+    // 3. Cambia "container" por "container-fluid px-0"
+    <div className="container-fluid px-0">
+      
+      
 
       <Swiper
-        modules={[Autoplay, Pagination]}
-        autoplay={{ delay: 2500 }}
+        // 4. Añade Navigation a los módulos
+        modules={[Autoplay, Pagination, EffectFade, Navigation]}
+        navigation={true} // 5. Activa las flechas
+        effect="fade"
+        fadeEffect={{
+          crossFade: true,
+        }}
+        autoplay={{ delay: 3500 }}
         pagination={{ clickable: true }}
         loop={true}
+        slidesPerView={1}
         spaceBetween={30}
-        slidesPerView={3}
-        breakpoints={{
-          0: { slidesPerView: 1 },
-          768: { slidesPerView: 2 },
-          1200: { slidesPerView: 3 },
-        }}
       >
         {featured.map((item) => (
-          <SwiperSlide key={item.titulo}>
-            <div className="card bg-dark text-white border-0 h-100 shadow-lg">
-              <img
-                src={item.imagen}
-                className="card-img-top"
-                alt={item.titulo}
-                style={{ height: "230px", objectFit: "cover" }}
-              />
-              <div className="card-body">
-                <h5 className="card-title">{item.titulo}</h5>
-                <p className="card-text">{item.precio}</p>
+          <SwiperSlide key={item.titulo} className="custom-slide">
+            
+            {/* 1. IMAGEN DE FONDO (BORROSA) */}
+            <img
+              src={item.imagen}
+              className="slide-image-background"
+              alt="" // Es decorativa, no necesita alt
+            />
+
+            {/* 2. IMAGEN PRINCIPAL (NÍTIDA) */}
+            <img
+              src={item.imagen}
+              className="slide-image-foreground" // Renombramos la clase
+              alt={item.titulo}
+            />
+
+            {/* 3. El resto (gradiente, texto y botón) quedan igual */}
+            <div className="slide-overlay-gradient"></div>
+            <div className="slide-content-wrapper">
+              <div className="slide-text">
+                <h3 className="card-title fw-bold">{item.titulo}</h3>
+                <p className="card-text-small d-none d-md-block">
+                  {item.descripcion.substring(0, 80)}...
+                </p>
+                <p className="fw-bold fs-5 mt-2">{item.precio}</p>
               </div>
+              <button
+                className="btn btn-light"
+                onClick={() => onProductClick(item)}
+              >
+                Más información
+              </button>
             </div>
           </SwiperSlide>
         ))}

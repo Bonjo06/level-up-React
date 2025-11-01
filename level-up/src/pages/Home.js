@@ -1,12 +1,29 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react"; // 1. Añadimos useEffect
 import { motion, AnimatePresence } from "framer-motion";
-import Navbar from "../components/NavBar";
+// 2. Añadimos useLocation y useNavigate
+import { useLocation, useNavigate } from "react-router-dom"; 
 import ProductCarousel from "../components/CarruselProducts";
 import productsData from "../data/ProductsData";
+import { useCart } from '../context/CartContext';
 
 function Home() {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+
+  // 3. Añadimos los hooks para leer la ubicación
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { addToCart } = useCart();
+
+  // 4. Añadimos el useEffect para recibir el mensaje
+  useEffect(() => {
+    const message = location.state?.message;
+    if (message) {
+      alert(message); // Muestra "Sesión iniciada correctamente"
+      // Limpia el estado para que no vuelva a saltar si refrescas
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location, navigate]);
 
   const handleCardClick = (product) => {
     setSelectedProduct(product);
@@ -20,23 +37,17 @@ function Home() {
 
   const featuredProducts = Object.values(productsData).flat().slice(0, 6);
 
+  const handleAddToCart = (product) => {
+    addToCart(product);
+    closeModal(); // Cierra el modal después de añadir
+  };
+
   return (
     <div className="bg-dark text-white min-vh-100">
-      <Navbar />
 
-      <section className="text-center py-5 bg-primary bg-gradient">
-        <motion.h1
-          className="display-4 fw-bold mb-3"
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
-        >
-          Bienvenido a <span className="text-warning">Level-Up Gamer</span>
-        </motion.h1>
-        <p className="lead">Tu destino gamer: consolas, periféricos y más.</p>
-      </section>
+      {/* (Tu Navbar se renderiza desde App.js, lo cual es correcto) */}
 
-      <ProductCarousel featured={featuredProducts} />
+      <ProductCarousel featured={featuredProducts} onProductClick={handleCardClick} />
 
       <div className="container my-5">
         {Object.entries(productsData).map(([category, products]) => (
@@ -51,7 +62,7 @@ function Home() {
                   transition={{ type: "spring", stiffness: 200 }}
                 >
                   <div
-                    className="card bg-dark border-secondary h-100 shadow"
+                    className="card bg-dark border-secondary h-100 shadow producto-card"
                     onClick={() => handleCardClick(product)}
                     style={{ cursor: "pointer" }}
                   >
@@ -59,15 +70,27 @@ function Home() {
                       src={product.imagen}
                       className="card-img-top"
                       alt={product.titulo}
-                      style={{ height: "230px", objectFit: "cover" }}
+                      style={{ 
+                        height: "230px", 
+                        objectFit: "contain", 
+                        backgroundColor: "white" 
+                      }}
                     />
-                    <div className="card-body">
-                      <h5 className="card-title">{product.titulo}</h5>
-                      <p className="text-muted small">
-                        {product.descripcion.substring(0, 50)}...
+                    
+                    <div className="card-body d-flex flex-column">
+                      <h5 className="card-title text-white">{product.titulo}</h5>
+                      <p className="text-light small">
+                        {product.descripcion.substring(0, 100)}...
                       </p>
-                      <p className="fw-bold">{product.precio}</p>
+                      <p className="fw-bold text-white mt-auto">{product.precio}</p>
                     </div>
+
+                    <div className="producto-overlay">
+                      <div className="overlay-texto">
+                        Más información
+                      </div>
+                    </div>
+                    
                   </div>
                 </motion.div>
               ))}
@@ -110,9 +133,12 @@ function Home() {
                   <p>{selectedProduct.descripcion}</p>
                   <p className="fw-bold">{selectedProduct.precio}</p>
                   <p className="text-secondary">Stock: {selectedProduct.stock}</p>
-                  <button className="btn btn-primary w-100 mt-2">
+                  <button 
+                    className="btn btn-primary w-100 mt-2"
+                    onClick={() => handleAddToCart(selectedProduct)}
+                  >
                     Añadir al carro
-                  </button>
+                </button>
                 </div>
               </div>
             </motion.div>
@@ -120,11 +146,7 @@ function Home() {
         )}
       </AnimatePresence>
 
-      <footer className="bg-black text-center py-4 mt-5 border-top border-secondary">
-        <p className="mb-0 text-secondary">
-          © 2025 Level-Up Gamer — Todos los derechos reservados
-        </p>
-      </footer>
+      {/* (Tu Footer se renderiza desde App.js, lo cual es correcto) */}
     </div>
   );
 }
