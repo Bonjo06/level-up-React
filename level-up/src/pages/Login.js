@@ -1,27 +1,26 @@
-// 1. Importa 'useEffect' y 'useLocation'
-import React, { useState, useEffect } from 'react';
-// 2. Importa 'useLocation'
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import './Login.css';
-// 3. Importa el SVG de fallback (esto está bien)
-import bg from '../assets/images/login-bg.svg';
+// Ya no importamos 'bg' de 'assets'
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  
-  // 4. Obtén 'location'
   const location = useLocation();
+  const hasShownAlertRef = useRef(false);
 
-  // 5. Este 'useEffect' recibe mensajes (ej. "Sesión cerrada")
   useEffect(() => {
     const message = location.state?.message;
-    if (message) {
-      alert(message); // Muestra el mensaje
+    if (message && !hasShownAlertRef.current) {
+      hasShownAlertRef.current = true;
+      alert(message); 
       navigate(location.pathname, { replace: true, state: {} });
     }
-  }, [location, navigate]); // Se ejecuta cada vez que la ubicación cambia
+    if (!message) {
+      hasShownAlertRef.current = false;
+    }
+  }, [location, navigate]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -39,13 +38,27 @@ function Login() {
   };
 
   return (
-    <div
-      className="login-page"
-      // 6. ESTA ES LA CORRECCIÓN:
-      // Se referencia 'Login.jpg' como un string de ruta absoluta '/'.
-      // El navegador lo buscará en 'public/images/Login.jpg'.
-      style={{ backgroundImage: `url('/images/Login.jpg'), url(${bg})` }}
-    >
+    // --- MODIFICACIÓN AQUÍ ---
+    // Añadimos el style en línea para el 'backgroundImage' de fallback.
+    // El navegador buscará esta imagen en la carpeta 'public'.
+    <div className="login-page">
+      
+      {/* El video de fondo */}
+      <video 
+        autoPlay 
+        loop 
+        muted 
+        playsInline
+        className="login-video-bg"
+      >
+        <source src="/images/Fondo.mp4" type="video/mp4" />
+        Tu navegador no soporta el video.
+      </video>
+      
+      {/* El overlay oscuro */}
+      <div className="login-fallback-overlay"></div>
+      
+      {/* La tarjeta de login */}
       <div className="card shadow-lg p-4 rounded-4 login-card" style={{ width: '22rem' }}>
         <h3 className="text-center mb-4">Iniciar sesión</h3>
         <form onSubmit={handleSubmit}>

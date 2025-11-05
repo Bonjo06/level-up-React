@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useCart } from '../context/CartContext';
 
@@ -10,12 +10,17 @@ function Navbar() {
   const navigate = useNavigate();
   const { cartItems } = useCart();
 
+  const location = useLocation();
+
   // useEffect se ejecuta cuando el Navbar se carga
   useEffect(() => {
     // Revisa si existe "UsuarioLogeado" en localStorage
     const userEmail = localStorage.getItem('UsuarioLogeado'); 
     if (userEmail) {
       setCurrentUser(userEmail);
+    } else {
+      // Asegúrate de limpiar el estado si no hay usuario
+      setCurrentUser(null);
     }
 
     // Listener para sincronizar entre pestañas
@@ -28,7 +33,9 @@ function Navbar() {
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
-  }, []); // El array vacío [] significa que esto se ejecuta solo una vez (al montar)
+  // ----- MODIFICACIÓN AQUÍ -----
+  // Cambiamos '[]' por '[location]'
+  }, [location]); 
 
   // --- MODIFICACIÓN AQUÍ ---
   // Función para manejar el "Cerrar Sesión"
@@ -68,11 +75,6 @@ function Navbar() {
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/Cart">
-                Carrito
-              </Link>
-            </li>
-            <li className="nav-item">
               <Link className="nav-link" to="/Contact">
                 Contacto
               </Link>
@@ -99,8 +101,8 @@ function Navbar() {
             </li>
 
             <li className="nav-item ms-lg-2">
-              <Link className="nav-link" to="/cart">
-                🛒
+              <Link className="nav-link" to="/carrito">
+                Carrito 🛒
                 {/* Muestra un contador si hay items */}
                 {cartItems.length > 0 && (
                   <span className="badge rounded-pill bg-primary ms-1">

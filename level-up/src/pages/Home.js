@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react"; // 1. Añadimos useEffect
+// 1. Añadimos useRef
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 // 2. Añadimos useLocation y useNavigate
 import { useLocation, useNavigate } from "react-router-dom"; 
@@ -15,15 +16,7 @@ function Home() {
   const navigate = useNavigate();
   const { addToCart } = useCart();
 
-  // 4. Añadimos el useEffect para recibir el mensaje
-  useEffect(() => {
-    const message = location.state?.message;
-    if (message) {
-      alert(message); // Muestra "Sesión iniciada correctamente"
-      // Limpia el estado para que no vuelva a saltar si refrescas
-      navigate(location.pathname, { replace: true, state: {} });
-    }
-  }, [location, navigate]);
+  // --- INICIO DE LAS FUNCIONES QUE FALTABAN ---
 
   const handleCardClick = (product) => {
     setSelectedProduct(product);
@@ -41,6 +34,36 @@ function Home() {
     addToCart(product);
     closeModal(); // Cierra el modal después de añadir
   };
+
+  // --- FIN DE LAS FUNCIONES QUE FALTABAN ---
+
+
+  // --- ARREGLO DOBLE ALERTA ---
+  // 4. Añadimos la referencia
+  const hasShownAlertRef = useRef(false);
+
+  // 5. Este 'useEffect' recibe el mensaje
+  useEffect(() => {
+    const message = location.state?.message;
+
+    // 6. Comprobamos si hay mensaje Y si NO se ha mostrado ya
+    if (message && !hasShownAlertRef.current) {
+      // Marcamos como mostrado ANTES de la alerta
+      hasShownAlertRef.current = true; 
+      alert(message); // Muestra "Sesión iniciada correctamente"
+      
+      // Limpia el estado
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+    
+    // 7. Si no hay mensaje, reseteamos el ref para la próxima vez
+    if (!message) {
+      hasShownAlertRef.current = false;
+    }
+    
+  }, [location, navigate]); // El array de dependencias está bien
+  // --- FIN ARREGLO DOBLE ALERTA ---
+
 
   return (
     <div className="bg-dark text-white min-vh-100">

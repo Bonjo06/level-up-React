@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 
 // 1. Creamos el Contexto
 const CartContext = createContext();
@@ -8,9 +8,23 @@ export const useCart = () => {
   return useContext(CartContext);
 };
 
+// --- MODIFICACIÓN 1: Función para cargar el estado inicial ---
+// Lee el carrito guardado en localStorage al iniciar
+const getInitialCart = () => {
+  const savedCart = localStorage.getItem('cartItems');
+  return savedCart ? JSON.parse(savedCart) : [];
+};
+
 // 3. Creamos el Proveedor (Provider) que manejará la lógica
 export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState([]); // Estado que guarda los productos
+  // --- MODIFICACIÓN 2: Usa la función de estado inicial ---
+  const [cartItems, setCartItems] = useState(getInitialCart()); 
+
+  // --- MODIFICACIÓN 3: Guardar en localStorage ---
+  // Este efecto se ejecuta cada vez que 'cartItems' cambia
+  useEffect(() => {
+    localStorage.setItem('cartItems', JSON.stringify(cartItems));
+  }, [cartItems]);
 
   // Función para añadir productos al carrito
   const addToCart = (product) => {
