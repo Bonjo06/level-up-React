@@ -1,0 +1,152 @@
+/* src/components/CarruselProducts.css */
+
+/* --- Estilos de Paginación --- */
+.swiper-pagination-bullet {
+  background-color: #f8f9fa;
+  opacity: 0.7;
+  width: 10px;
+  height: 10px;
+}
+
+.swiper-pagination-bullet-active {
+  background-color: #ffffff;
+  opacity: 1;
+}
+
+/* --- ESTILOS DEL SLIDE (con fondo borroso) --- */
+
+.custom-slide {
+  position: relative;
+  height: 450px;
+  overflow: hidden;
+  /* El fondo ahora es la imagen borrosa, no un color */
+}
+
+/* 1. (NUEVO) Imagen de fondo borrosa */
+.slide-image-background {
+  position: absolute;
+  top: -20px; /* Expandimos para que el blur no deje bordes */
+  left: -20px;
+  width: calc(100% + 40px);
+  height: calc(100% + 40px);
+  object-fit: cover; /* Rellena todo el espacio */
+  z-index: 1;
+  filter: blur(20px) brightness(0.6); /* Borroso y oscuro */
+  transform: scale(1.1);
+}
+
+/* 2. (MODIFICADO) Imagen principal nítida */
+.slide-image-foreground {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* Muestra el producto completo */
+  z-index: 2; /* Encima del fondo borroso */
+  transition: transform 0.4s ease;
+}
+
+/* 3. (MODIFICADO) El hover se aplica a la imagen nítida */
+.custom-slide:hover .slide-image-foreground {
+  transform: scale(1.03);
+}
+
+/* 4. Gradiente SOBRE la imagen de fondo (z-index: 3) */
+.slide-overlay-gradient {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 80%;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.9) 10%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  z-index: 3; /* Encima de la imagen nítida */
+}
+
+/* 5. Contenido SOBRE todo lo demás (z-index: 4) */
+.slide-content-wrapper {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 2rem;
+  z-index: 4; /* Encima de todo */
+  color: #ffffff;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1.5rem;
+
+  /* Centra el contenido en pantallas anchas */
+  max-width: 1320px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* --- (Estilos de texto y responsive sin cambios) --- */
+
+.slide-text {
+  flex-grow: 1;
+}
+
+.slide-text .card-title {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.slide-text .card-text-small {
+  font-size: 0.95rem;
+  color: #e0e0e0;
+  margin-bottom: 0;
+  max-width: 600px;
+}
+
+.slide-content-wrapper .btn {
+  flex-shrink: 0;
+  font-weight: bold;
+  padding: 0.6rem 1.2rem;
+}
+
+@media (max-width: 768px) {
+  .custom-slide {
+    height: 400px;
+  }
+
+  .slide-content-wrapper {
+    padding: 1.5rem;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .slide-text .card-title {
+    font-size: 1.5rem;
+  }
+
+  .slide-content-wrapper .btn {
+    margin-top: 0.5rem;
+  }
+}
+
+/* --- Estilos para las flechas (sin cambios) --- */
+.swiper-button-next,
+.swiper-button-prev {
+  color: #ffffff;
+  opacity: 0.5;
+  transition: opacity 0.2s ease;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  opacity: 1;
+}
+
+.swiper-button-next::after,
+.swiper-button-prev::after {
+  font-size: 2rem;
+  font-weight: bold;
+}

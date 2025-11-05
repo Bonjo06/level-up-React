@@ -1,0 +1,85 @@
+/* Background for the Login page.
+   The actual image can be provided from `src/assets/images` (imported in the component)
+   or placed in `public/images` and referenced from CSS. */
+.login-page {
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  /* fallback color if no image is provided */
+  background-color: #f8f9fa;
+}
+
+/* Make the card slightly translucent so it's readable on top of the image */
+.login-page .login-card {
+  background-color: rgba(255, 255, 255, 0.88);
+}
+
+/* Optional: improve responsiveness on small screens */
+@media (max-width: 576px) {
+  .login-page .login-card {
+    width: 100% !important;
+    margin: 0 1rem;
+  }
+}
+
+/* (fallback already included above) */
+
+.login-page {
+  position: relative; 
+  /* --- MODIFICACIÓN AQUÍ --- */
+  /* Quitamos la línea 'background-image' que causaba el error */
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  overflow: hidden; 
+}
+
+/* 2. Estilos para el video de fondo */
+.login-video-bg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Centrado perfecto */
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  z-index: 1; /* Detrás del overlay y la tarjeta */
+  object-fit: cover; /* Asegura que cubra todo */
+}
+
+/* 3. Overlay para oscurecer el fondo (video o imagen) */
+.login-fallback-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3); /* Oscurece un 30% */
+  z-index: 2; /* Encima del video, debajo de la tarjeta */
+}
+
+/* 4. Asegurar que la tarjeta esté encima de todo */
+.login-page .login-card {
+  background-color: rgba(255, 255, 255, 0.88);
+  position: relative; /* Para que obedezca al z-index */
+  z-index: 3; /* Encima del overlay y el video */
+}
+
+/* (tus media queries) */
+@media (max-width: 576px) {
+  .login-page .login-card {
+    width: 100% !important;
+    margin: 0 1rem;
+  }
+}

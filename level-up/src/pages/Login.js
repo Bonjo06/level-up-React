@@ -1,10 +1,26 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import './Login.css';
+// Ya no importamos 'bg' de 'assets'
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
+  const hasShownAlertRef = useRef(false);
+
+  useEffect(() => {
+    const message = location.state?.message;
+    if (message && !hasShownAlertRef.current) {
+      hasShownAlertRef.current = true;
+      alert(message); 
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+    if (!message) {
+      hasShownAlertRef.current = false;
+    }
+  }, [location, navigate]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -14,16 +30,36 @@ function Login() {
     }
     const storedPassword = localStorage.getItem(email);
     if (storedPassword && storedPassword === password) {
-      alert('Sesión iniciada correctamente.');
-      navigate('/'); 
+      localStorage.setItem('UsuarioLogeado', email);
+      navigate('/', { state: { message: 'Sesión iniciada correctamente' } }); 
     } else {
       alert('Correo o clave inválidos.');
     }
   };
 
   return (
-    <div className="bg-light d-flex justify-content-center align-items-center vh-100">
-      <div className="card shadow-lg p-4 rounded-4" style={{ width: '22rem' }}>
+    // --- MODIFICACIÓN AQUÍ ---
+    // Añadimos el style en línea para el 'backgroundImage' de fallback.
+    // El navegador buscará esta imagen en la carpeta 'public'.
+    <div className="login-page">
+      
+      {/* El video de fondo */}
+      <video 
+        autoPlay 
+        loop 
+        muted 
+        playsInline
+        className="login-video-bg"
+      >
+        <source src="/images/Fondo.mp4" type="video/mp4" />
+        Tu navegador no soporta el video.
+      </video>
+      
+      {/* El overlay oscuro */}
+      <div className="login-fallback-overlay"></div>
+      
+      {/* La tarjeta de login */}
+      <div className="card shadow-lg p-4 rounded-4 login-card" style={{ width: '22rem' }}>
         <h3 className="text-center mb-4">Iniciar sesión</h3>
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
@@ -49,10 +85,12 @@ function Login() {
             />
           </div>
           <div>
-            <Link to="/recuperar-contrasena" className="medium">¿Olvidaste tu contraseña?</Link>
+            <span>¿Olvidaste tu contraseña? </span>
+            <Link to="/recuperar-contrasena" className="medium">Recupérala aquí</Link>
           </div>
           <div>
-            <Link to="/registro" className="medium">Registrarse</Link>
+            <span>¿No tienes una cuenta? </span>
+            <Link to="/registro" className="medium">Registrate aquí</Link>
           </div>
           <button type="submit" className="btn btn-primary w-100 mt-2">Ingresar</button>
         </form>
