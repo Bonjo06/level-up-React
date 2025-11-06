@@ -35,18 +35,43 @@ export const CartProvider = ({ children }) => {
       if (existingItem) {
         // Si existe, actualiza la cantidad (opcional, por ahora solo lo añadimos)
         // O podrías simplemente no hacer nada o mostrar un alert
-        alert("¡Este producto ya está en tu carrito!");
-        return prevItems;
+       return prevItems.map(item =>
+          item.titulo === product.titulo
+          ? { ...item, cantidad: item.cantidad + 1 }
+          : item
+       );
       } else {
-        // Si no existe, lo añade al array (con cantidad 1)
-        alert("Producto añadido al carrito");
-        return [...prevItems, { ...product, quantity: 1 }];
+        return [...prevItems, { ...product, cantidad: 1 }];
       }
     });
   };
 
+  //Funcion para botones de añadir y quitar productos
+  const updateQuantity = (productTitulo, newQuantity) => {
+    setCartItems(prevItems => {
+      if (newQuantity < 1) {
+        alert("Producto eliminado del carrito");
+        return prevItems.filter(item => item.titulo !== productTitulo);
+      }
+
+      return prevItems.map(item =>
+        item.titulo === productTitulo
+        ? { ...item, cantidad: newQuantity }
+        : item
+      )
+    })
+  }
+
+  //Funcion ppara vaciar el carrito
+  const clearCart = () => {
+    if(window.confirm("¿Estás seguro de que deseas vaciar el carrito?")) {
+      setCartItems([]);
+    }
+  }
+
   // Función para eliminar productos (la necesitarás en Cart.js)
   const removeFromCart = (productTitulo) => {
+    alert("Producto eliminado del carrito");
     setCartItems(prevItems => {
       return prevItems.filter(item => item.titulo !== productTitulo);
     });
@@ -56,7 +81,9 @@ export const CartProvider = ({ children }) => {
   const value = {
     cartItems,
     addToCart,
-    removeFromCart
+    removeFromCart,
+    updateQuantity,
+    clearCart
   };
 
   return (

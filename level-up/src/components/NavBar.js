@@ -17,7 +17,10 @@ function Navbar() {
     // Revisa si existe "UsuarioLogeado" en localStorage
     const userEmail = localStorage.getItem('UsuarioLogeado'); 
     if (userEmail) {
-      setCurrentUser(userEmail);
+      // Obtenemos el nombre asociado al email
+      const userName = localStorage.getItem(`${userEmail}_name`);
+      // Si existe el nombre, lo usamos; si no, usamos el email
+      setCurrentUser(userName || userEmail);
     } else {
       // Asegúrate de limpiar el estado si no hay usuario
       setCurrentUser(null);
@@ -26,7 +29,12 @@ function Navbar() {
     // Listener para sincronizar entre pestañas
     const handleStorageChange = () => {
       const userEmail = localStorage.getItem('UsuarioLogeado');
-      setCurrentUser(userEmail);
+      if (userEmail) {
+        const userName = localStorage.getItem(`${userEmail}_name`);
+        setCurrentUser(userName || userEmail);
+      } else {
+        setCurrentUser(null);
+      }
     };
     window.addEventListener('storage', handleStorageChange);
     
@@ -75,12 +83,12 @@ function Navbar() {
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/Contact">
+              <Link className="nav-link" to="/contacto">
                 Contacto
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/AboutUs">
+              <Link className="nav-link" to="/acerca-de">
                 Sobre nosotros
               </Link>
             </li>

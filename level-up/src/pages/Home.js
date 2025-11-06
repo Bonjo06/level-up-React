@@ -6,6 +6,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import ProductCarousel from "../components/CarruselProducts";
 import productsData from "../data/ProductsData";
 import { useCart } from '../context/CartContext';
+import ScrollToTop from '../components/ScrollToTop';
 
 function Home() {
   const [modalVisible, setModalVisible] = useState(false);
@@ -73,16 +74,26 @@ function Home() {
       <ProductCarousel featured={featuredProducts} onProductClick={handleCardClick} />
 
       <div className="container my-5">
-        {Object.entries(productsData).map(([category, products]) => (
-          <section key={category} className="mb-5">
+        {Object.entries(productsData).map(([category, products], categoryIndex) => (
+          <motion.section 
+            key={category} 
+            className="mb-5"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.6, delay: categoryIndex * 0.1 }}
+          >
             <h2 className="mb-4 text-info">{category}</h2>
             <div className="row g-4">
-              {products.map((product) => (
+              {products.map((product, index) => (
                 <motion.div
                   key={product.titulo}
                   className="col-12 col-md-6 col-lg-3"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: index * 0.05 }}
                   whileHover={{ scale: 1.03 }}
-                  transition={{ type: "spring", stiffness: 200 }}
                 >
                   <div
                     className="card bg-dark border-secondary h-100 shadow producto-card"
@@ -118,7 +129,7 @@ function Home() {
                 </motion.div>
               ))}
             </div>
-          </section>
+          </motion.section>
         ))}
       </div>
 
@@ -168,6 +179,8 @@ function Home() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <ScrollToTop />
 
       {/* (Tu Footer se renderiza desde App.js, lo cual es correcto) */}
     </div>

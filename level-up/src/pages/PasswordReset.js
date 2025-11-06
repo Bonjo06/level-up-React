@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import './Login.css'; // Reutilizamos los estilos del video
 
 function PasswordReset() {
   const [email, setEmail] = useState('');
@@ -33,8 +34,25 @@ function PasswordReset() {
   };
 
   return (
-    <div className="bg-light d-flex justify-content-center align-items-center vh-100">
-      <div className="card shadow-lg p-4 rounded-4" style={{ width: '22rem' }}>
+    <div className="login-page">
+      
+      {/* El video de fondo */}
+      <video 
+        autoPlay 
+        loop 
+        muted 
+        playsInline
+        className="login-video-bg"
+      >
+        <source src="/images/Fondo.mp4" type="video/mp4" />
+        Tu navegador no soporta el video.
+      </video>
+      
+      {/* El overlay oscuro */}
+      <div className="login-fallback-overlay"></div>
+      
+      {/* La tarjeta de recuperación */}
+      <div className="card shadow-lg p-4 rounded-4 login-card" style={{ width: '22rem' }}>
         <h3 className="text-center mb-4">Recuperar Contraseña</h3>
         <form onSubmit={handleSubmit}>
           <div className="mb-3">

@@ -11,6 +11,8 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import PasswordReset from './pages/PasswordReset'; 
 import Cart from './pages/Cart';
+import Contact from './pages/Contact';
+import AboutUs from './pages/AboutUs';
 
 function App() {
   return (
@@ -26,6 +28,8 @@ function App() {
           <Route path="/registro" element={<Register />} />
           <Route path="/recuperar-contrasena" element={<PasswordReset />} />
           <Route path="/carrito" element={<Cart />} />
+          <Route path="/contacto" element={<Contact />} />
+          <Route path="/acerca-de" element={<AboutUs />} />
           {/* Tus otras rutas (productos, contacto) irían aquí */}
         </Routes>
       </main>

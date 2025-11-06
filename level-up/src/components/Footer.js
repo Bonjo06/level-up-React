@@ -18,14 +18,14 @@ function Footer() {
             <h6 className="text-white text-uppercase">Contacto</h6>
             <ul className="list-unstyled small mb-0">
               <li className="mb-1">
-                <a href="mailto:contacto@levelup.com" className="text-secondary text-decoration-none">
+                <p className="text-secondary text-decoration-none">
                   contacto@levelup.com
-                </a>
+                </p>
               </li>
               <li>
-                <a href="tel:+56912345678" className="text-secondary text-decoration-none">
+                <p className="text-secondary text-decoration-none">
                   +56 9 1234 5678
-                </a>
+                </p>
               </li>
             </ul>
           </div>
@@ -43,7 +43,7 @@ function Footer() {
         {/* Copyright */}
         <div className="text-center border-top border-secondary pt-4 mt-4">
           <p className="mb-0 small">
-            © 2025 Level-Up Gamer — Todos los derechos reservados
+             Level-Up Gamer Todos los derechos reservados
           </p>
         </div>
       </div>
