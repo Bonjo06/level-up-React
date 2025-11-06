@@ -167,7 +167,7 @@ function Cart() {
             className="btn btn-primary btn-lg"
             onClick={() => alert('Funcionalidad de pago próximamente')}
           >
-            Proceder al pago →
+            Pagar productos
           </motion.button>
         </motion.div>
         </>
