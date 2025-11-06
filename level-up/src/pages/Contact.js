@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+
 import { motion } from 'framer-motion';
 import Breadcrumbs from '../components/Breadcrumbs';
 import ScrollToTop from '../components/ScrollToTop';
@@ -12,7 +12,7 @@ function Contact() {
   const [errors, setErrors] = useState({});
   
   // 2. Usamos 'navigate' para redirigir después de enviar
-  const navigate = useNavigate();
+  
 
   // 3. Validación mejorada
   const validateForm = () => {
@@ -46,15 +46,24 @@ function Contact() {
       return;
     }
     
-    console.log('Formulario Enviado:', { name, email, message });
-    alert('¡Gracias por tu mensaje! Nos pondremos en contacto contigo pronto.');
+    // Guardar datos en localStorage
+    const contactData = {
+      name: name.trim(),
+      email: email.trim(),
+      message: message.trim(),
+      fecha: new Date().toLocaleString('es-CL')
+    };
+
+    const mensajes = JSON.parse(localStorage.getItem('contactSubmissions') || '[]');
+    mensajes.push(contactData);
+    localStorage.setItem('contactSubmissions', JSON.stringify(mensajes));
+    
+    alert('¡Gracias por tu mensaje! Nos contactaremos contigo dentro de la brevedad.');
 
     setName('');
     setEmail('');
     setMessage('');
     setErrors({});
-
-    navigate('/');
   };
 
   return (

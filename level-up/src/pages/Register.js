@@ -1,21 +1,28 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import './Login.css'; // Reutilizamos los estilos del video
 
 function Register() {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmedPassword, setConfirmedPassword] = useState('');
   
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!email || !password) {
+    if (!name || !email || !password || !confirmedPassword) {
       alert('Completa todos los campos.');
       return;
     }
     if (password.length < 4 || password.length > 12) {
       alert('La contraseña debe tener entre 4 y 12 caracteres.');
+      return;
+    }
+    if (password !== confirmedPassword) {
+      alert('Las contraseñas no coinciden.');
       return;
     }
     if (localStorage.getItem(email)) {
@@ -24,16 +31,45 @@ function Register() {
     }
     
     localStorage.setItem(email, password);
+    localStorage.setItem(`${email}_name`, name); // Guardamos el nombre asociado al email
     alert('Su cuenta se ha registrado exitosamente.');
     navigate('/iniciarsesion');
   };
 
   return (
-    <div className="bg-light d-flex justify-content-center align-items-center min-vh-100">
-      <div className="card shadow-lg p-4 rounded-4" style={{ width: '22rem' }}>
+    <div className="login-page">
+      
+      {/* El video de fondo */}
+      <video 
+        autoPlay 
+        loop 
+        muted 
+        playsInline
+        className="login-video-bg"
+      >
+        <source src="/images/Fondo.mp4" type="video/mp4" />
+        Tu navegador no soporta el video.
+      </video>
+      
+      {/* El overlay oscuro */}
+      <div className="login-fallback-overlay"></div>
+      
+      {/* La tarjeta de registro */}
+      <div className="card shadow-lg p-4 rounded-4 login-card" style={{ width: '22rem' }}>
         <h3 className="text-center mb-4">Registrarse</h3>
         
         <form onSubmit={handleSubmit}>
+          <div className="mb-3">
+            <label htmlFor="nameUser" className="form-label">Nombre </label>
+            <input 
+              type="text" 
+              className="form-control" 
+              id="nameUser" 
+              placeholder="Alexis Sánchez"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </div>
           <div className="mb-3">
             <label htmlFor="emailUser" className="form-label">Correo electrónico</label>
             <input 
@@ -54,6 +90,17 @@ function Register() {
               placeholder="********"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="confirmPassUser" className="form-label">Confirmar contraseña</label>
+            <input 
+              type="password" 
+              className="form-control" 
+              id="confirmPassUser" 
+              placeholder="********"
+              value={confirmedPassword}
+              onChange={(e) => setConfirmedPassword(e.target.value)}
             />
           </div>
           <div>
