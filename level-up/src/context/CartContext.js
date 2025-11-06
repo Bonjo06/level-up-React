@@ -47,9 +47,10 @@ export const CartProvider = ({ children }) => {
   };
 
   //Funcion para botones de añadir y quitar productos
-  const updateQuantity = (productTitulo, newQuanteity) => {
-    setCartItemns(prevItems => {
+  const updateQuantity = (productTitulo, newQuantity) => {
+    setCartItems(prevItems => {
       if (newQuantity < 1) {
+        alert("Producto eliminado del carrito");
         return prevItems.filter(item => item.titulo !== productTitulo);
       }
 
@@ -70,6 +71,7 @@ export const CartProvider = ({ children }) => {
 
   // Función para eliminar productos (la necesitarás en Cart.js)
   const removeFromCart = (productTitulo) => {
+    alert("Producto eliminado del carrito");
     setCartItems(prevItems => {
       return prevItems.filter(item => item.titulo !== productTitulo);
     });
