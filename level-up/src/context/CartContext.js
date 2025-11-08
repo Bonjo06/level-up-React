@@ -8,33 +8,60 @@ export const useCart = () => {
   return useContext(CartContext);
 };
 
-// --- MODIFICACIÓN 1: Función para cargar el estado inicial ---
-// Lee el carrito guardado en localStorage al iniciar
+// --- MODIFICACIÓN: Función para obtener la clave del carrito según el usuario ---
+const getCartKey = () => {
+  const userEmail = localStorage.getItem('UsuarioLogeado');
+  return userEmail ? `carrito_${userEmail}` : 'carrito_invitado';
+};
+
+// --- MODIFICACIÓN: Función para cargar el carrito del usuario actual ---
 const getInitialCart = () => {
-  const savedCart = localStorage.getItem('cartItems');
+  const cartKey = getCartKey();
+  const savedCart = localStorage.getItem(cartKey);
   return savedCart ? JSON.parse(savedCart) : [];
 };
 
 // 3. Creamos el Proveedor (Provider) que manejará la lógica
 export const CartProvider = ({ children }) => {
-  // --- MODIFICACIÓN 2: Usa la función de estado inicial ---
   const [cartItems, setCartItems] = useState(getInitialCart()); 
 
-  // --- MODIFICACIÓN 3: Guardar en localStorage ---
-  // Este efecto se ejecuta cada vez que 'cartItems' cambia
+  // --- MODIFICACIÓN: Guardar en localStorage con clave específica del usuario ---
   useEffect(() => {
-    localStorage.setItem('cartItems', JSON.stringify(cartItems));
+    const cartKey = getCartKey();
+    localStorage.setItem(cartKey, JSON.stringify(cartItems));
+  }, [cartItems]);
+
+  // --- MODIFICACIÓN: Recargar carrito cuando cambia el usuario ---
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setCartItems(getInitialCart());
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    // También escuchar cambios de sesión (login/logout)
+    const interval = setInterval(() => {
+      const currentCartKey = getCartKey();
+      const expectedCart = localStorage.getItem(currentCartKey);
+      const currentCart = JSON.stringify(cartItems);
+      
+      if (expectedCart !== currentCart) {
+        setCartItems(getInitialCart());
+      }
+    }, 500);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
   }, [cartItems]);
 
   // Función para añadir productos al carrito
   const addToCart = (product) => {
-    // Revisa si el producto ya existe
     setCartItems(prevItems => {
       const existingItem = prevItems.find(item => item.titulo === product.titulo);
       
       if (existingItem) {
-        // Si existe, actualiza la cantidad (opcional, por ahora solo lo añadimos)
-        // O podrías simplemente no hacer nada o mostrar un alert
        return prevItems.map(item =>
           item.titulo === product.titulo
           ? { ...item, cantidad: item.cantidad + 1 }
@@ -62,14 +89,14 @@ export const CartProvider = ({ children }) => {
     })
   }
 
-  //Funcion ppara vaciar el carrito
+  //Funcion para vaciar el carrito
   const clearCart = () => {
     if(window.confirm("¿Estás seguro de que deseas vaciar el carrito?")) {
       setCartItems([]);
     }
   }
 
-  // Función para eliminar productos (la necesitarás en Cart.js)
+  // Función para eliminar productos
   const removeFromCart = (productTitulo) => {
     alert("Producto eliminado del carrito");
     setCartItems(prevItems => {

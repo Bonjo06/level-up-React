@@ -82,41 +82,100 @@ function Home() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6, delay: categoryIndex * 0.1 }}
+            style={{ overflow: 'visible' }}
           >
-            <h2 className="mb-4 text-info">{category}</h2>
-            <div className="row g-4">
+            {/* Título de la categoría */}
+            <div className="d-flex justify-content-between align-items-center mb-4">
+              <h2 className="text-info mb-0">{category}</h2>
+              <div className="d-flex gap-2">
+                <button 
+                  className="btn btn-outline-secondary btn-sm"
+                  onClick={() => {
+                    const container = document.getElementById(`carousel-${categoryIndex}`);
+                    container.scrollBy({ left: -450, behavior: 'smooth' });
+                  }}
+                >
+                  ◀
+                </button>
+                <button 
+                  className="btn btn-outline-secondary btn-sm"
+                  onClick={() => {
+                    const container = document.getElementById(`carousel-${categoryIndex}`);
+                    container.scrollBy({ left: 450, behavior: 'smooth' });
+                  }}
+                >
+                  ▶
+                </button>
+              </div>
+            </div>
+
+            {/* Carrusel horizontal de productos */}
+            <div 
+              id={`carousel-${categoryIndex}`}
+              className="d-flex gap-3"
+              style={{
+                overflowX: 'auto',
+                overflowY: 'visible',
+                scrollbarWidth: 'thin',
+                scrollbarColor: '#6c757d #212529',
+                scrollBehavior: 'smooth',
+                padding: '10px 5px 20px 5px'
+              }}
+            >
               {products.map((product, index) => (
                 <motion.div
                   key={product.titulo}
-                  className="col-12 col-md-6 col-lg-3"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, x: 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, delay: index * 0.05 }}
-                  whileHover={{ scale: 1.03 }}
+                  whileHover={{ scale: 1.05 }}
+                  style={{ minWidth: '300px', maxWidth: '300px', flexShrink: 0 }}
                 >
                   <div
-                    className="card bg-dark border-secondary h-100 shadow producto-card"
+                    className="card bg-dark border-secondary shadow producto-card"
                     onClick={() => handleCardClick(product)}
-                    style={{ cursor: "pointer" }}
+                    style={{ 
+                      cursor: "pointer",
+                      height: "520px",
+                      display: "flex",
+                      flexDirection: "column"
+                    }}
                   >
                     <img
                       src={product.imagen}
                       className="card-img-top"
                       alt={product.titulo}
                       style={{ 
-                        height: "230px", 
+                        height: "300px", 
                         objectFit: "contain", 
-                        backgroundColor: "white" 
+                        backgroundColor: "white",
+                        flexShrink: 0
                       }}
                     />
                     
-                    <div className="card-body d-flex flex-column">
-                      <h5 className="card-title text-white">{product.titulo}</h5>
-                      <p className="text-light small">
-                        {product.descripcion.substring(0, 100)}...
+                    <div className="card-body d-flex flex-column" style={{ overflow: "hidden", flex: "1" }}>
+                      <h5 className="card-title text-white" style={{ 
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        display: "-webkit-box",
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical",
+                        minHeight: "3rem"
+                      }}>
+                        {product.titulo}
+                      </h5>
+                      <p className="text-light small" style={{ 
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        display: "-webkit-box",
+                        WebkitLineClamp: 3,
+                        WebkitBoxOrient: "vertical",
+                        flexGrow: 1
+                      }}>
+                        {product.descripcion}
                       </p>
-                      <p className="fw-bold text-white mt-auto">{product.precio}</p>
+                      <p className="fw-bold text-white mt-auto mb-0">{product.precio}</p>
                     </div>
 
                     <div className="producto-overlay">
@@ -124,7 +183,6 @@ function Home() {
                         Más información
                       </div>
                     </div>
-                    
                   </div>
                 </motion.div>
               ))}

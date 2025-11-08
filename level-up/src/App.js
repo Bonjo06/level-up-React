@@ -13,6 +13,9 @@ import PasswordReset from './pages/PasswordReset';
 import Cart from './pages/Cart';
 import Contact from './pages/Contact';
 import AboutUs from './pages/AboutUs';
+import PaymentSuccess from './pages/PaymentSuccess';
+import PaymentFailed from './pages/PaymentFailed';
+import PaymentError from './pages/PaymentError';
 
 function App() {
   return (
@@ -30,6 +33,9 @@ function App() {
           <Route path="/carrito" element={<Cart />} />
           <Route path="/contacto" element={<Contact />} />
           <Route path="/acerca-de" element={<AboutUs />} />
+          <Route path="/payment/success" element={<PaymentSuccess />} />
+          <Route path="/payment/failed" element={<PaymentFailed />} />
+          <Route path="/payment/error" element={<PaymentError />} />
           {/* Tus otras rutas (productos, contacto) irían aquí */}
         </Routes>
       </main>

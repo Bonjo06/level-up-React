@@ -47,7 +47,7 @@ export default function LeafletMap({
             <Popup>
               <strong>{markerText}</strong>
               <br />
-              📍 {lat.toFixed(4)}, {lng.toFixed(4)}
+              Coordenadas: {lat.toFixed(4)}, {lng.toFixed(4)}
             </Popup>
           </Marker>
         </MapContainer>

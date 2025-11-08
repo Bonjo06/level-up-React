@@ -1,18 +1,90 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../context/CartContext';
 import Breadcrumbs from '../components/Breadcrumbs';
 import ScrollToTop from '../components/ScrollToTop';
+import { ShoppingCartIcon } from '../components/FeatureIcons';
 
 function Cart() {
 
   const { cartItems, removeFromCart, updateQuantity, clearCart } = useCart();
+  const [isProcessing, setIsProcessing] = useState(false);
 
   // Calcula el total
   const total = cartItems.reduce((acc, item) => {
     const price = parseFloat(item.precio.replace(/[^0-9,-]+/g, "").replace(",", "."));
     return acc + (price * item.cantidad);
   }, 0);
+
+  // Función para procesar el pago con Transbank
+  const handleProceedToPayment = async () => {
+    // Verificar que haya un usuario logueado
+    const userEmail = localStorage.getItem('UsuarioLogeado');
+    if (!userEmail) {
+      alert('Debes iniciar sesión para realizar una compra');
+      window.location.href = '/iniciarsesion';
+      return;
+    }
+
+    if (cartItems.length === 0) {
+      alert('Tu carrito está vacío');
+      return;
+    }
+
+    setIsProcessing(true);
+
+    try {
+      // Generar un ID único para la orden (timestamp + random)
+      const buyOrder = `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      
+      // Preparar datos para enviar al backend
+      const paymentData = {
+        amount: Math.round(total), // Transbank requiere número entero (sin decimales)
+        buyOrder: buyOrder,
+        sessionId: userEmail // Usamos el email del usuario
+      };
+
+      console.log('📦 Iniciando pago:', paymentData);
+
+      // Llamar al backend para crear la transacción
+      const response = await fetch('http://localhost:5000/api/payment/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(paymentData)
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        console.log('✅ Transacción creada:', data);
+        
+        // Crear un formulario oculto para redirigir a Transbank
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = data.url;
+
+        const tokenInput = document.createElement('input');
+        tokenInput.type = 'hidden';
+        tokenInput.name = 'token_ws';
+        tokenInput.value = data.token;
+
+        form.appendChild(tokenInput);
+        document.body.appendChild(form);
+        
+        // Redirigir a Transbank
+        form.submit();
+      } else {
+        throw new Error(data.error || 'Error al crear la transacción');
+      }
+
+    } catch (error) {
+      console.error('❌ Error al procesar pago:', error);
+      alert('Error al procesar el pago. Por favor intenta nuevamente.');
+      setIsProcessing(false);
+    }
+  };
 
   return (
     <div className="container my-5">
@@ -25,8 +97,9 @@ function Cart() {
         transition={{ duration: 0.5 }}
         className="mb-4"
       >
-        <h2 className="text-white">
-          🛒 Tu Carrito de Compras
+        <h2 className="text-white d-flex align-items-center">
+          <ShoppingCartIcon size={36} color="#0d6efd" />
+          <span className="ms-2">Tu Carrito de Compras</span>
           {cartItems.length > 0 && (
             <span className="badge bg-primary ms-3">{cartItems.length}</span>
           )}
@@ -40,7 +113,9 @@ function Cart() {
           transition={{ duration: 0.5 }}
           className="text-center py-5"
         >
-          <div className="mb-4" style={{ fontSize: '4rem' }}>🛒</div>
+          <div className="mb-4 d-flex justify-content-center">
+            <ShoppingCartIcon size={96} color="#6c757d" />
+          </div>
           <p className="text-secondary lead">Tu carrito está vacío.</p>
           <motion.a 
             href="/"
@@ -165,9 +240,17 @@ function Cart() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="btn btn-primary btn-lg"
-            onClick={() => alert('Funcionalidad de pago próximamente')}
+            onClick={handleProceedToPayment}
+            disabled={isProcessing}
           >
-            Pagar productos
+            {isProcessing ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Procesando...
+              </>
+            ) : (
+              '💳 Proceder al pago'
+            )}
           </motion.button>
         </motion.div>
         </>

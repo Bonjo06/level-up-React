@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useCart } from '../context/CartContext';
+import { ShoppingCartIcon } from './FeatureIcons';
 
 function Navbar() {
 
@@ -17,10 +18,12 @@ function Navbar() {
     // Revisa si existe "UsuarioLogeado" en localStorage
     const userEmail = localStorage.getItem('UsuarioLogeado'); 
     if (userEmail) {
-      // Obtenemos el nombre asociado al email
-      const userName = localStorage.getItem(`${userEmail}_name`);
-      // Si existe el nombre, lo usamos; si no, usamos el email
-      setCurrentUser(userName || userEmail);
+      // Obtener usuarios registrados
+      const usuarios = JSON.parse(localStorage.getItem('usuarios') || '[]');
+      // Buscar el usuario por email
+      const usuario = usuarios.find(user => user.email === userEmail);
+      // Si existe el usuario, usamos su nombre; si no, usamos el email
+      setCurrentUser(usuario ? usuario.name : userEmail);
     } else {
       // Asegúrate de limpiar el estado si no hay usuario
       setCurrentUser(null);
@@ -30,8 +33,9 @@ function Navbar() {
     const handleStorageChange = () => {
       const userEmail = localStorage.getItem('UsuarioLogeado');
       if (userEmail) {
-        const userName = localStorage.getItem(`${userEmail}_name`);
-        setCurrentUser(userName || userEmail);
+        const usuarios = JSON.parse(localStorage.getItem('usuarios') || '[]');
+        const usuario = usuarios.find(user => user.email === userEmail);
+        setCurrentUser(usuario ? usuario.name : userEmail);
       } else {
         setCurrentUser(null);
       }
@@ -109,8 +113,9 @@ function Navbar() {
             </li>
 
             <li className="nav-item ms-lg-2">
-              <Link className="nav-link" to="/carrito">
-                Carrito 🛒
+              <Link className="nav-link d-flex align-items-center" to="/carrito">
+                <ShoppingCartIcon size={20} color="#0d6efd" />
+                <span className="ms-1">Carrito</span>
                 {/* Muestra un contador si hay items */}
                 {cartItems.length > 0 && (
                   <span className="badge rounded-pill bg-primary ms-1">

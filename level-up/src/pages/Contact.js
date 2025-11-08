@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import Breadcrumbs from '../components/Breadcrumbs';
 import ScrollToTop from '../components/ScrollToTop';
+import { MailIcon, PhoneIcon, ClockIcon } from '../components/FeatureIcons';
 
 function Contact() {
   // 1. Estados para cada campo del formulario
@@ -178,21 +179,27 @@ function Contact() {
           >
             <div className="col-md-4">
               <div className="card bg-dark border-secondary text-center p-3">
-                <div className="text-primary mb-2">📧</div>
+                <div className="text-primary mb-2 d-flex justify-content-center">
+                  <MailIcon size={36} color="#0d6efd" />
+                </div>
                 <small className="text-secondary">Email</small>
                 <p className="mb-0 text-white small">info@levelupgamer.cl</p>
               </div>
             </div>
             <div className="col-md-4">
               <div className="card bg-dark border-secondary text-center p-3">
-                <div className="text-primary mb-2">📞</div>
+                <div className="text-primary mb-2 d-flex justify-content-center">
+                  <PhoneIcon size={36} color="#198754" />
+                </div>
                 <small className="text-secondary">Teléfono</small>
                 <p className="mb-0 text-white small">+56 9 1234 5678</p>
               </div>
             </div>
             <div className="col-md-4">
               <div className="card bg-dark border-secondary text-center p-3">
-                <div className="text-primary mb-2">⏰</div>
+                <div className="text-primary mb-2 d-flex justify-content-center">
+                  <ClockIcon size={36} color="#ffc107" />
+                </div>
                 <small className="text-secondary">Horario</small>
                 <p className="mb-0 text-white small">Lun-Vie 9:00-18:00</p>
               </div>

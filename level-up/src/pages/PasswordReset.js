@@ -23,12 +23,22 @@ function PasswordReset() {
       alert('Las contraseñas no son iguales.');
       return;
     }
-    if (!localStorage.getItem(email)) {
+
+    // Obtener usuarios registrados
+    const usuarios = JSON.parse(localStorage.getItem('usuarios') || '[]');
+    
+    // Buscar el usuario por email
+    const usuarioIndex = usuarios.findIndex(user => user.email === email);
+    
+    if (usuarioIndex === -1) {
       alert('El correo no está registrado.');
       return;
     }
 
-    localStorage.setItem(email, newPassword);
+    // Actualizar la contraseña
+    usuarios[usuarioIndex].password = newPassword;
+    localStorage.setItem('usuarios', JSON.stringify(usuarios));
+    
     alert('Su contraseña se actualizó con éxito.');
     navigate('/iniciarsesion');
   };

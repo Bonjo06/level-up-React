@@ -1,34 +1,113 @@
 const productsData = {
-    "Juegos de mesa": [
+
+    "Keys de Steam": [
         {
-            titulo: "Catán",
-            imagen: "https://devirinvestments.s3.eu-west-1.amazonaws.com/img/catalog/product/8436017220100-1200-face3d.jpg",
-            descripcion: "El clásico juego de estrategia donde deberás colonizar la isla de Catán. Construye asentamientos, ciudades y caminos mientras comercias con otros jugadores. Un juego de mesa imprescindible para 3-4 jugadores.",
-            precio: "$35.990 clp",
+            titulo: "Baldur's Gate 3",
+            imagen: "https://cdn.cloudflare.steamstatic.com/steam/apps/1086940/header.jpg",
+            descripcion: "Un épico RPG basado en Dungeons & Dragons. Crea tu personaje, forma tu grupo y vive una aventura inmersiva llena de decisiones, combate táctico y narrativa profunda.",
+            precio: "$45.990 clp",
             stock: "10 unidades"
         },
         {
-            titulo: "Carcassonne",
-            imagen: "https://devirinvestments.s3.eu-west-1.amazonaws.com/img/catalog/product/8436017222593-1200-face3d-copy.jpg",
-            descripcion: "Construye el paisaje medieval francés colocando losetas y posicionando estratégicamente a tus seguidores. Un juego ganador del Spiel des Jahres, perfecto para 2-5 jugadores de todas las edades.",
-            precio: "$26.990 clp",
+            titulo: "Elden Ring",
+            imagen: "https://cdn.cloudflare.steamstatic.com/steam/apps/1245620/header.jpg",
+            descripcion: "De los creadores de Dark Souls, llega un mundo abierto lleno de desafíos, jefes colosales y misterios. Explora las Tierras Intermedias y forja tu propio destino.",
+            precio: "$39.990 clp",
+            stock: "8 unidades"
+        },
+        {
+            titulo: "Stardew Valley",
+            imagen: "https://cdn.cloudflare.steamstatic.com/steam/apps/413150/header.jpg",
+            descripcion: "Construye la granja de tus sueños en este encantador simulador de vida. Cultiva, cría animales, pesca, explora minas y crea la vida que siempre quisiste.",
+            precio: "$7.990 clp",
+            stock: "15 unidades"
+        },
+        {
+            titulo: "Cyberpunk 2077",
+            imagen: "https://cdn.cloudflare.steamstatic.com/steam/apps/1091500/header.jpg",
+            descripcion: "Adéntrate en Night City, una metrópolis futurista repleta de tecnología, crimen y oportunidades. Personaliza tu personaje y toma decisiones que cambiarán la historia.",
+            precio: "$35.990 clp",
+            stock: "6 unidades"
+        },
+        {
+            titulo: "Red Dead Redemption 2",
+            imagen: "https://cdn.cloudflare.steamstatic.com/steam/apps/1174180/header.jpg",
+            descripcion: "Vive el ocaso del Viejo Oeste como Arthur Morgan, miembro de la banda Van der Linde. Una historia épica de honor, lealtad y supervivencia en un mundo abierto impresionante.",
+            precio: "$39.990 clp",
+            stock: "12 unidades"
+        },
+        {
+            titulo: "Hades",
+            imagen: "https://cdn.cloudflare.steamstatic.com/steam/apps/1145360/header.jpg",
+            descripcion: "Desafía al dios del inframundo en este roguelike de acción aclamado por la crítica. Combina poderosas habilidades y descubre la historia de los dioses griegos.",
+            precio: "$9.990 clp",
+            stock: "14 unidades"
+        },
+        {
+            titulo: "The Witcher 3: Wild Hunt",
+            imagen: "https://cdn.cloudflare.steamstatic.com/steam/apps/292030/header.jpg",
+            descripcion: "Embárcate como Geralt de Rivia en una aventura de mundo abierto repleta de monstruos, contratos y decisiones morales que moldean tu destino.",
+            precio: "$19.990 clp",
+            stock: "11 unidades"
+        },
+        {
+            titulo: "Hollow Knight",
+            imagen: "https://cdn.cloudflare.steamstatic.com/steam/apps/367520/header.jpg",
+            descripcion: "Explora las profundidades del reino de Hallownest en este metroidvania bellamente animado, con combate desafiante y atmósfera melancólica.",
+            precio: "$6.990 clp",
+            stock: "20 unidades"
+        },
+        {
+            titulo: "Lies of P",
+            imagen: "https://cdn.cloudflare.steamstatic.com/steam/apps/1627720/header.jpg",
+            descripcion: "Una reinterpretación oscura del cuento de Pinocho. Enfréntate a enemigos brutales y descubre los secretos de una ciudad retorcida en este soulslike steampunk.",
+            precio: "$38.990 clp",
+            stock: "9 unidades"
+        },
+        {
+            titulo: "Palworld",
+            imagen: "https://cdn.cloudflare.steamstatic.com/steam/apps/1623730/header.jpg",
+            descripcion: "Captura y entrena criaturas llamadas Pals en un vasto mundo abierto. Construye, combate y sobrevive en este explosivo cruce entre Pokémon y supervivencia.",
+            precio: "$28.990 clp",
+            stock: "13 unidades"
+        },
+        {
+            titulo: "No Man’s Sky",
+            imagen: "https://cdn.cloudflare.steamstatic.com/steam/apps/275850/header.jpg",
+            descripcion: "Explora un universo infinito lleno de planetas, criaturas y misterios. Construye tu base, comercia y surca las estrellas en esta aventura espacial sin límites.",
+            precio: "$32.990 clp",
+            stock: "10 unidades"
+        },
+        {
+            titulo: "Sea of Stars",
+            imagen: "https://cdn.cloudflare.steamstatic.com/steam/apps/1244090/header.jpg",
+            descripcion: "Una joya de rol por turnos inspirada en los clásicos de los 90. Combina narrativa emocional, exploración y combates tácticos con una estética pixel art preciosa.",
+            precio: "$15.990 clp",
+            stock: "17 unidades"
+        },
+        {
+            titulo: "Resident Evil 4 Remake",
+            imagen: "https://cdn.cloudflare.steamstatic.com/steam/apps/2050650/header.jpg",
+            descripcion: "Revive el clásico de terror y acción con gráficos modernos, nuevos controles y una ambientación escalofriante. Una obra maestra reinventada.",
+            precio: "$42.990 clp",
             stock: "7 unidades"
         },
         {
-            titulo: "Ticket to Ride",
-            imagen: "https://i5.walmartimages.com/seo/Ticket-to-Ride-Strategy-Board-Game-for-Ages-8-and-up-from-Asmodee_3324315b-3c03-4b75-90a0-f710c937eec5_1.e4320c8caa0a631dbce2cbdedef06681.jpeg",
-            descripcion: "Viaja en tren por toda América del Norte completando rutas ferroviarias. Colecciona cartas de tren y conecta ciudades en este emocionante juego de estrategia para 2-5 jugadores.",
-            precio: "$37.990 clp",
-            stock: "5 unidades"
+            titulo: "Lethal Company",
+            imagen: "https://cdn.cloudflare.steamstatic.com/steam/apps/1966720/header.jpg",
+            descripcion: "Trabaja junto a tus compañeros recolectando chatarra en estaciones abandonadas… pero cuidado, algo acecha en la oscuridad. Un terror cooperativo impredecible.",
+            precio: "$6.990 clp",
+            stock: "18 unidades"
         },
         {
-            titulo: "Azul",
-            imagen: "https://cdnx.jumpseller.com/vudu-gaming/image/9468564/thumb/1079/1079?1642998845",
-            descripcion: "Inspírate en los azulejos portugueses en este elegante juego de colocación de losetas. Planifica cuidadosamente tu estrategia para crear los patrones más hermosos y obtener la mayor puntuación.",
-            precio: "$39.990 clp",
+            titulo: "Horizon Zero Dawn",
+            imagen: "https://cdn.cloudflare.steamstatic.com/steam/apps/1151640/header.jpg",
+            descripcion: "Explora un mundo dominado por máquinas como Aloy, una cazadora en busca de su pasado. Combina sigilo, estrategia y exploración en paisajes asombrosos.",
+            precio: "$29.990 clp",
             stock: "9 unidades"
         }
     ],
+
     "Periféricos": [
         {
             titulo: "Mando inalambrico de Xbox Series X",

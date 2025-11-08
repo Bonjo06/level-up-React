@@ -28,8 +28,14 @@ function Login() {
       alert('Por favor completa el/los campos vacíos.');
       return;
     }
-    const storedPassword = localStorage.getItem(email);
-    if (storedPassword && storedPassword === password) {
+
+    // Obtener usuarios registrados
+    const usuarios = JSON.parse(localStorage.getItem('usuarios') || '[]');
+    
+    // Buscar usuario por email y contraseña
+    const usuario = usuarios.find(user => user.email === email && user.password === password);
+    
+    if (usuario) {
       localStorage.setItem('UsuarioLogeado', email);
       navigate('/', { state: { message: 'Sesión iniciada correctamente' } }); 
     } else {

@@ -25,13 +25,27 @@ function Register() {
       alert('Las contraseñas no coinciden.');
       return;
     }
-    if (localStorage.getItem(email)) {
+
+    // Obtener usuarios existentes
+    const usuarios = JSON.parse(localStorage.getItem('usuarios') || '[]');
+    
+    // Verificar si el email ya está registrado
+    if (usuarios.find(user => user.email === email)) {
       alert('Este correo ya se encuentra registrado.');
       return;
     }
     
-    localStorage.setItem(email, password);
-    localStorage.setItem(`${email}_name`, name); // Guardamos el nombre asociado al email
+    // Agregar nuevo usuario
+    usuarios.push({
+      name: name.trim(),
+      email: email.trim(),
+      password: password,
+      fechaRegistro: new Date().toLocaleString('es-CL')
+    });
+    
+    // Guardar array actualizado
+    localStorage.setItem('usuarios', JSON.stringify(usuarios));
+    
     alert('Su cuenta se ha registrado exitosamente.');
     navigate('/iniciarsesion');
   };
