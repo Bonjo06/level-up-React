@@ -166,6 +166,16 @@ function Cart() {
                           parseFloat(item.precio.replace(/[^0-9,-]+/g, "").replace(",", ".")) * item.cantidad
                         )} CLP
                       </div>
+                      {/* Indicador de stock */}
+                      {(() => {
+                        const stockNumber = parseInt(item.stock.match(/\d+/)?.[0] || 0);
+                        const isMaxStock = item.cantidad >= stockNumber;
+                        return (
+                          <small className={`d-block mt-1 ${isMaxStock ? 'text-warning' : 'text-secondary'}`}>
+                            {isMaxStock ? '⚠️ Stock máximo alcanzado' : `Stock disponible: ${stockNumber}`}
+                          </small>
+                        );
+                      })()}
                     </div>
                   </div>
 
@@ -187,6 +197,14 @@ function Cart() {
                       whileTap={{ scale: 0.9 }}
                       className="btn btn-outline-secondary btn-sm"
                       onClick={() => updateQuantity(item.titulo, item.cantidad + 1)}
+                      disabled={(() => {
+                        const stockNumber = parseInt(item.stock.match(/\d+/)?.[0] || 0);
+                        return item.cantidad >= stockNumber;
+                      })()}
+                      style={(() => {
+                        const stockNumber = parseInt(item.stock.match(/\d+/)?.[0] || 0);
+                        return item.cantidad >= stockNumber ? { opacity: 0.5, cursor: 'not-allowed' } : {};
+                      })()}
                     >
                       +
                     </motion.button>
