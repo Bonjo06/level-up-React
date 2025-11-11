@@ -46,7 +46,7 @@ function PaymentFailed() {
 
               <h2 className="text-danger mb-3">Pago Rechazado</h2>
               <p className="text-white lead mb-4">
-                Lo sentimos, no pudimos procesar tu pago
+                Lo sentimos, tu pago no pudo ser procesado
               </p>
 
               {/* Detalle del error */}

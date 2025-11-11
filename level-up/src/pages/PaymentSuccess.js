@@ -6,35 +6,47 @@ import { useCart } from '../context/CartContext';
 function PaymentSuccess() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { clearCart } = useCart();
+  const { cartItems } = useCart();
 
   const buyOrder = searchParams.get('buyOrder');
   const amount = searchParams.get('amount');
   const authCode = searchParams.get('authCode');
+  // Preparar datos de visualización (venta) y fallback
+  const fallbackCartKey = localStorage.getItem('UsuarioLogeado')
+    ? `carrito_${localStorage.getItem('UsuarioLogeado')}`
+    : 'carrito_invitado';
+  const cartFromStorageForDisplay = JSON.parse(localStorage.getItem(fallbackCartKey) || '[]');
+  const ventaSource = Array.isArray(cartItems) && cartItems.length ? cartItems : cartFromStorageForDisplay;
+  const venta = (ventaSource || []).map(item => ({
+    titulo: item.titulo,
+    cantidad: typeof item.cantidad !== 'undefined' ? item.cantidad : 1,
+    precio: item.precio || null
+  }));
+
+  // Intentar obtener el pedido ya guardado (por buyOrder) para mostrar exactamente lo que se registró
+  const pedidosGuardados = JSON.parse(localStorage.getItem('pedidos') || '[]');
+  const pedidoGuardado = buyOrder ? pedidosGuardados.find(p => String(p.ordenCompra) === String(buyOrder)) : null;
+  const displayVenta = pedidoGuardado && Array.isArray(pedidoGuardado.venta) && pedidoGuardado.venta.length ? pedidoGuardado.venta : venta;
 
   useEffect(() => {
-    // Limpiar el carrito después de un pago exitoso
+    // Limpiar el carrito después de un pago exitoso y guardar productos comprados
     if (buyOrder && amount) {
-      // Guardamos el pedido en localStorage para historial
+      // Guardamos el pedido en localStorage para historial incluyendo los productos (tomamos `venta` ya calculada)
       const pedidos = JSON.parse(localStorage.getItem('pedidos') || '[]');
       pedidos.push({
         ordenCompra: buyOrder,
         monto: amount,
+        venta: venta,
         codigoAutorizacion: authCode,
         fecha: new Date().toLocaleString('es-CL'),
         estado: 'Aprobado'
       });
       localStorage.setItem('pedidos', JSON.stringify(pedidos));
-      
-      // Limpiar el carrito sin confirmación
-      localStorage.setItem(
-        localStorage.getItem('UsuarioLogeado') 
-          ? `carrito_${localStorage.getItem('UsuarioLogeado')}` 
-          : 'carrito_invitado',
-        '[]'
-      );
+
+      // Limpiar el carrito sin confirmación (dejar vacío para el usuario)
+      localStorage.setItem(fallbackCartKey, '[]');
     }
-  }, [buyOrder, amount, authCode, clearCart]);
+  }, [buyOrder, amount, authCode, cartItems, fallbackCartKey, venta]);
 
   return (
     <div className="container my-5">
@@ -69,6 +81,23 @@ function PaymentSuccess() {
                   <div className="col-12 mb-3">
                     <small className="text-secondary">Orden de compra</small>
                     <p className="text-white mb-0 fw-bold">{buyOrder}</p>
+                  </div>
+                  <div className="col-12 mb-3">
+                    <small className="text-secondary">Productos Comprados</small>
+                    <div className="text-white mb-0 fw-bold">
+                      {displayVenta && displayVenta.length ? (
+                        <ul className="list-unstyled mb-0">
+                          {displayVenta.map((p, i) => (
+                            <li key={i}>
+                              {p.titulo}
+                              {p.cantidad && p.cantidad > 1 ? ` x${p.cantidad}` : ''}
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <span className="text-secondary">No hay productos registrados</span>
+                      )}
+                    </div>
                   </div>
                   <div className="col-12 mb-3">
                     <small className="text-secondary">Monto pagado</small>

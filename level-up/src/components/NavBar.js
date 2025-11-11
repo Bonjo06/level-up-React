@@ -220,7 +220,7 @@ function Navbar() {
                     ))}
                     <div className="p-2 text-center border-top border-secondary">
                       <small className="text-secondary">
-                        {searchResults.length} resultado{searchResults.length !== 1 ? 's' : ''}
+                        Se encon{searchResults.length !== 1 ? 'traron' : 'tró'} {searchResults.length} resultado{searchResults.length !== 1 ? 's' : ''}
                       </small>
                     </div>
                   </motion.div>

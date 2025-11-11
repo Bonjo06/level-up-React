@@ -18,9 +18,14 @@ L.Icon.Default.mergeOptions({
  * @param {number} height - Altura del mapa en píxeles
  * @param {string} markerText - Texto del popup del marcador
  */
+
+//-34.293903, -71.310360
+
+//lat = -33.451765,
+// //lng = -70.665924, 
 export default function LeafletMap({ 
-  lat = -33.451765,
-  lng = -70.665924, 
+  lat = -34.293903,
+  lng = -71.310360, 
   zoom = 13, 
   height = 400,
   markerText = 'Level-up Gamer'

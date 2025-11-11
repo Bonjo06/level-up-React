@@ -1,5 +1,6 @@
 const productsData = {
 
+    //Juegos
     "Keys de Steam": [
         {
             titulo: "Baldur's Gate 3",
@@ -26,7 +27,7 @@ const productsData = {
             titulo: "Cyberpunk 2077",
             imagen: "https://cdn.cloudflare.steamstatic.com/steam/apps/1091500/header.jpg",
             descripcion: "Adéntrate en Night City, una metrópolis futurista repleta de tecnología, crimen y oportunidades. Personaliza tu personaje y toma decisiones que cambiarán la historia.",
-            precio: "$35.990 clp",
+            precio: "$17.990 clp",
             stock: "6 unidades"
         },
         {
@@ -105,9 +106,17 @@ const productsData = {
             descripcion: "Conviértete en un Ladrón Fantasma y cambia los corazones corruptos robando sus distorsionados deseos. La edición definitiva de Persona 5 con nuevos personajes, historia expandida, combate mejorado y más de 100 horas de contenido.",
             precio: "$47.990 clp",
             stock: "12 unidades"
+        },
+        {
+            titulo: "Hatsune Miku: Project DIVA Mega Mix+",
+            imagen: "https://cdn.cloudflare.steamstatic.com/steam/apps/1761390/header.jpg",
+            descripcion: "Un rítmico juego de música protagonizado por Hatsune Miku y otros Vocaloids. Combina pistas pegadizas, múltiples modos de juego y desafíos rítmicos para los fans del género.",
+            precio: "$19.990 clp",
+            stock: "10 unidades"
         }
     ],
 
+    //Periféricos
     "Periféricos": [
         {
             titulo: "Mando inalambrico de Xbox Series X",
@@ -157,43 +166,10 @@ const productsData = {
             descripcion: "Teclado mecánico compacto 60% con tecnología LIGHTSPEED inalámbrica, switches GX Optical para respuesta ultrarrápida, y personalización total mediante KEYCONTROL. Batería de hasta 65 horas y construcción premium en aluminio.",
             precio: "$159.990 clp",
             stock: "8 unidades"
-        },
-        {
-            titulo: "Razer Nari Ultimate Wireless",
-            imagen: "https://assets.razerzone.com/eeimages/support/products/1423/1423_nari_ultimate.png",
-            descripcion: "Auriculares gaming inalámbricos con tecnología de retroalimentación háptica Razer HyperSense, audio THX Spatial, almohadillas de gel refrigerante y micrófono retráctil con cancelación de ruido. Hasta 8 horas de batería.",
-            precio: "$179.990 clp",
-            stock: "7 unidades"
-        },
-        {
-            titulo: "Corsair K70 RGB Pro",
-            imagen: "https://assets.corsair.com/image/upload/f_auto,q_auto/content/K70-RGB-PRO-MECHANICAL-GAMING-KEYBOARD-NA-02-FRONT.png",
-            descripcion: "Teclado mecánico gaming full-size con switches Cherry MX Red, marco de aluminio cepillado, cable USB Type-C desmontable e iluminación RGB por tecla personalizable. Incluye control multimedia dedicado y reposamuñecas suave.",
-            precio: "$139.990 clp",
-            stock: "10 unidades"
-        },
-        {
-            titulo: "HyperX Cloud Alpha Wireless",
-            imagen: "https://row.hyperx.com/cdn/shop/files/hyperx_cloud_alpha_wireless_headset_1_main_900x.jpg",
-            descripcion: "Auriculares gaming inalámbricos con hasta 300 horas de batería, controladores duales para audio premium, micrófono desmontable con cancelación de ruido y construcción duradera con almohadillas de memory foam.",
-            precio: "$169.990 clp",
-            stock: "9 unidades"
-        },
-        {
-            titulo: "8BitDo Ultimate Wireless",
-            imagen: "https://www.8bitdo.com/wp-content/uploads/ultimate-2.4g-2.png",
-            descripcion: "Control gaming inalámbrico de alta calidad con conectividad 2.4GHz y Bluetooth, perfil bajo con Hall Effect Sticks, gatillos y botones personalizables. Compatible con Switch, Windows y Android. Incluye base de carga.",
-            precio: "$59.990 clp",
-            stock: "12 unidades"
-        },
-        {
-            titulo: "Logitech G915 TKL Lightspeed",
-            imagen: "https://resource.logitechg.com/w_692,c_lpad,ar_4:3,q_auto,f_auto,dpr_1.0/d_transparent.gif/content/dam/gaming/en/products/g915-tkl/g915-tkl-gallery-1-nb.png",
-            descripcion: "Teclado mecánico inalámbrico tenkeyless ultra delgado con switches GL mecánicos de bajo perfil, iluminación RGB LIGHTSYNC personalizable por tecla y hasta 40 horas de batería. Construcción premium en aluminio aeroespacial.",
-            precio: "$199.990 clp",
-            stock: "6 unidades"
         }
     ],
+
+    //Consolas
     "Consolas": [
         {
             titulo: "PlayStation 5",
@@ -245,27 +221,15 @@ const productsData = {
             stock: "7 unidades"
         },
         {
-            titulo: "ASUS ROG Ally Z1 Extreme",
-            imagen: "https://dlcdnwebimgs.asus.com/gain/6e670f86-8454-4b69-9769-f0c8f4496c5b/w800",
-            descripcion: "Consola portátil gaming con procesador AMD Ryzen Z1 Extreme, pantalla táctil Full HD de 7 pulgadas a 120Hz, 16GB RAM y 512GB SSD. Ejecuta Windows 11, permitiendo acceso a múltiples tiendas digitales (Steam, Epic, Xbox Game Pass). Controles ergonómicos y conectividad completa.",
-            precio: "$899.990 clp",
-            stock: "6 unidades"
-        },
-        {
             titulo: "PlayStation 5 Digital Edition",
             imagen: "https://i5.walmartimages.com/seo/Sony-PlayStation-5-PS5-Digital-Edition-Video-Game-Console-White_c09ad4fc-e4b6-450f-b4bc-a0ef7a0b7c35.0a83200ec9e4e96fc44d63db2e66e07a.png",
             descripcion: "PlayStation 5 Digital Edition sin lector de discos, diseñada para quienes prefieren contenido 100% digital. Misma potencia que la PS5 estándar con SSD ultrarrápido, gráficos 4K, ray tracing y compatibilidad con control DualSense. Almacenamiento de 825GB expandible.",
             precio: "$699.990 clp",
             stock: "9 unidades"
-        },
-        {
-            titulo: "Lenovo Legion Go",
-            imagen: "https://p3-ofp.static.pub/ShareResource/na/subseries/hero/lenovo-legion-go-hero.png",
-            descripcion: "Consola portátil con pantalla táctil de 8.8 pulgadas QHD+ a 144Hz, procesador AMD Ryzen Z1 Extreme, 16GB RAM y 1TB SSD. Controles desmontables con modo FPS Mouse, Windows 11 preinstalado y compatibilidad con todos los launchers de juegos. Hasta 7 horas de batería.",
-            precio: "$1.049.990 clp",
-            stock: "5 unidades"
         }
     ],
+
+    //Computadores
     "Computadores Gamers": [
         {
             titulo: "Notebook ASUS ROG Strix G614PH-S5052W",
@@ -294,50 +258,10 @@ const productsData = {
             descripcion: "El Lenovo Legion Pro 5 16IAX10 es una notebook orientada a usuarios que buscan un equipo con alto rendimiento para tareas exigentes como gaming, edición multimedia y trabajo profesional. Cuenta con un procesador Intel Core Ultra 7 255HX de última generación y una tarjeta gráfica dedicada NVIDIA GeForce RTX 5060 con 8 GB de memoria, lo que garantiza un desempeño fluido en aplicaciones y juegos modernos. Su pantalla OLED de 16 pulgadas con resolución 2560x1600 y tasa de refresco de 165 Hz ofrece una experiencia visual nítida y colores vibrantes, ideal para contenido multimedia y diseño.",
             precio: "$1.999.990 clp",
             stock: "4 unidades"
-        },
-        {
-            titulo: "Alienware m18 R2",
-            imagen: "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/alienware-notebooks/alienware-m18-r2/media-gallery/notebook-alienware-m18-r2-dark-gallery-1.psd",
-            descripcion: "Portátil gaming de 18 pulgadas con procesador Intel Core i9-14900HX de 14ª generación, NVIDIA GeForce RTX 4090 con 16GB GDDR6, 32GB DDR5 RAM y 2TB SSD. Pantalla QHD+ de 165Hz con tecnología ComfortView Plus. Sistema de refrigeración Cryo-tech para máximo rendimiento sostenido.",
-            precio: "$4.999.990 clp",
-            stock: "3 unidades"
-        },
-        {
-            titulo: "Razer Blade 16",
-            imagen: "https://assets3.razerzone.com/VFyBbUvq1sO3ckJyqVfhfJKJGFY=/1500x1000/https%3A%2F%2Fhybrismediaprod.blob.core.windows.net%2Fsys-master-phoenix-images-container%2Fh00%2Fhfa%2F9712526548990%2Frazer-blade-16-2024-1500x1000-1.png",
-            descripcion: "Notebook gaming premium con procesador Intel Core i9-14900HX, GPU NVIDIA GeForce RTX 4080, 32GB DDR5 RAM y 1TB SSD PCIe. Pantalla dual mode de 16 pulgadas (4K 120Hz / FHD+ 240Hz), chasis CNC de aluminio unibody y vapor chamber cooling avanzado.",
-            precio: "$3.799.990 clp",
-            stock: "5 unidades"
-        },
-        {
-            titulo: "ASUS TUF Gaming A15 FA507",
-            imagen: "https://dlcdnwebimgs.asus.com/gain/2E30ED6F-01A1-47DB-86D6-DF36AC7E9FDD/w717/h525",
-            descripcion: "Laptop gaming resistente con AMD Ryzen 7 7735HS, NVIDIA GeForce RTX 4050 6GB, 16GB DDR5 RAM y 512GB SSD. Pantalla Full HD de 15.6 pulgadas a 144Hz con certificación MIL-STD-810H para durabilidad. Sistema de refrigeración con ventiladores Arc Flow y teclado RGB.",
-            precio: "$1.099.990 clp",
-            stock: "11 unidades"
-        },
-        {
-            titulo: "Acer Predator Helios Neo 16",
-            imagen: "https://static.acer.com/up/Resource/Acer/Laptops/Predator_Helios_Neo_16/Images/20231024/Acer-Predator-Helios-Neo-16-nh-qlyek-001-Pure-Black-01-Standard-min.png",
-            descripcion: "Gaming laptop con Intel Core i9-14900HX, NVIDIA GeForce RTX 4070 8GB, 32GB DDR5 RAM y 1TB SSD Gen4. Pantalla WQXGA de 16 pulgadas a 165Hz con 100% sRGB. Teclado RGB de 4 zonas, doble ventilador de 5ª generación y puerto Thunderbolt 4.",
-            precio: "$2.299.990 clp",
-            stock: "6 unidades"
-        },
-        {
-            titulo: "Gigabyte AORUS 17X",
-            imagen: "https://static.gigabyte.com/StaticFile/Image/Global/5c3f2e0c2f1e9f0cd4e50d5a9f8f8c3f/Product/32782/png/500",
-            descripcion: "Portátil gaming de alto rendimiento con Intel Core i9-14900HX, NVIDIA GeForce RTX 4090 16GB, 64GB DDR5 RAM y 2TB SSD. Pantalla QHD+ de 17.3 pulgadas a 240Hz, teclado mecánico AORUS con switches Omron, y sistema WINDFORCE Infinity cooling.",
-            precio: "$5.499.990 clp",
-            stock: "2 unidades"
-        },
-        {
-            titulo: "MSI Stealth 14 Studio",
-            imagen: "https://storage-asset.msi.com/global/picture/image/feature/nb/Stealth14Studio/kv.png",
-            descripcion: "Ultraportátil gaming de 14 pulgadas con Intel Core Ultra 9 185H, NVIDIA GeForce RTX 4070 8GB, 32GB LPDDR5x RAM y 1TB SSD. Pantalla 2.8K OLED a 120Hz con 100% DCI-P3. Peso de solo 1.7kg, batería de 73Wh y chasis de magnesio-aluminio.",
-            precio: "$2.799.990 clp",
-            stock: "7 unidades"
         }
     ],
+
+    //Mouses
     "Mouse": [
         {
             titulo: "Logitech Pro X Superlight",
@@ -382,20 +306,6 @@ const productsData = {
             stock: "10 unidades"
         },
         {
-            titulo: "Corsair Dark Core RGB Pro SE",
-            imagen: "https://assets.corsair.com/image/upload/f_auto,q_auto/content/DARK-CORE-RGB-PRO-SE-01-HERO.png",
-            descripcion: "Mouse gaming inalámbrico con tecnología SLIPSTREAM WIRELESS de baja latencia, sensor óptico PMW3392 de 18,000 DPI personalizable, batería recargable con hasta 50 horas de autonomía y carga inalámbrica Qi. Diseño ergonómico para diestros con 8 botones programables y RGB personalizable.",
-            precio: "$89.990 clp",
-            stock: "8 unidades"
-        },
-        {
-            titulo: "Logitech G502 X Plus Wireless",
-            imagen: "https://resource.logitechg.com/w_692,c_lpad,ar_4:3,q_auto,f_auto,dpr_1.0/d_transparent.gif/content/dam/gaming/en/products/g502x-plus/gallery/g502x-plus-gallery-1-black.png",
-            descripcion: "Mouse gaming con sensor HERO 25K (hasta 25,600 DPI), switches híbridos LIGHTFORCE óptico-mecánicos y sistema de peso ajustable DPI-Shift. Tecnología LIGHTSPEED wireless y Bluetooth, iluminación RGB LIGHTSYNC, 13 botones programables y hasta 120 horas de batería.",
-            precio: "$139.990 clp",
-            stock: "7 unidades"
-        },
-        {
             titulo: "Razer Basilisk V3 Pro",
             imagen: "https://assets.razerzone.com/eeimages/support/products/1871/1871_basilisk_v3_pro.png",
             descripcion: "Mouse ergonómico premium con sensor Focus Pro 30K, rueda de scroll inteligente HyperScroll Tilt, 11 botones programables Razer Chroma RGB con 13 zonas de iluminación. Conectividad triple (HyperSpeed, Bluetooth, USB-C) y hasta 90 horas de batería. Incluye base de carga inalámbrica.",
@@ -403,25 +313,11 @@ const productsData = {
             stock: "6 unidades"
         },
         {
-            titulo: "Finalmouse Starlight-12 Medium",
-            imagen: "https://cdn.shopify.com/s/files/1/0551/2578/7437/products/PerseusRenderImage_1600x.png",
-            descripcion: "Mouse ultra premium con carcasa de magnesio que pesa solo 47g, sensor PixArt PAW3370 (hasta 19,000 DPI), switches Kailh GM 8.0 de 80 millones de clics. Cable Finalmouse UL2 ultraligero y pies de PTFE 100% virgin grade. Edición limitada artesanal.",
-            precio: "$249.990 clp",
-            stock: "3 unidades"
-        },
-        {
             titulo: "HyperX Pulsefire Haste 2 Wireless",
             imagen: "https://row.hyperx.com/cdn/shop/files/hyperx_pulsefire_haste_2_wireless_mouse_1_main_900x.jpg",
             descripcion: "Mouse gaming ultraligero de 61g con sensor 26K de alta precisión, switches TTC Golden Micro de 80M de clics, batería de hasta 100 horas y pies de PTFE 100% virgin. Conectividad wireless 2.4GHz y Bluetooth 5.2. Diseño honeycomb con grip tape incluido.",
             precio: "$79.990 clp",
             stock: "13 unidades"
-        },
-        {
-            titulo: "ASUS ROG Chakram X",
-            imagen: "https://dlcdnwebimgs.asus.com/gain/7C47B853-E1DC-4E0B-B76F-E07A96AE8B22/w800",
-            descripcion: "Mouse gaming premium con joystick analógico integrado, sensor ROG AimPoint Pro de 36,000 DPI, switches ROG Micro de 100M de clics y batería de 119 horas. Carga inalámbrica Qi, conectividad tri-mode (RF, Bluetooth, USB), iluminación Aura Sync RGB y sistema de peso ajustable.",
-            precio: "$169.990 clp",
-            stock: "5 unidades"
         }
     ]
 };
