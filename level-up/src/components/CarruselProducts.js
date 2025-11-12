@@ -28,19 +28,19 @@ function ProductCarousel({ featured, onProductClick }) {
         spaceBetween={30}
       >
         {featured.map((item) => (
-          <SwiperSlide key={item.titulo} className="custom-slide">
+          <SwiperSlide key={item.itemTitle} className="custom-slide">
             {/* IMAGEN DE FONDO (BORROSA) */}
             <img
-              src={item.imagen}
+              src={item.itemImageLink}
               className="slide-image-background"
               alt=""
             />
 
             {/* IMAGEN PRINCIPAL (NÍTIDA) */}
             <img
-              src={item.imagen}
+              src={item.itemImageLink}
               className="slide-image-foreground"
-              alt={item.titulo}
+              alt={item.itemTitle}
             />
 
             {/* Gradiente */}
@@ -49,12 +49,12 @@ function ProductCarousel({ featured, onProductClick }) {
             {/* Contenido */}
             <div className="slide-content-wrapper">
               <div className="slide-text">
-                <h3 className="card-title fw-bold">{item.titulo}</h3>
+                <h3 className="card-title fw-bold">{item.itemTitle}</h3>
                 <p className="card-text-small d-none d-md-block">
-                  {item.descripcion.substring(0, 80)}...
+                  {item.itemDescription?.substring(0, 80)}...
                 </p>
                 <div className="d-flex align-items-center gap-3 mt-3">
-                  <p className="fw-bold fs-5 mb-0">{item.precio}</p>
+                  <p className="fw-bold fs-5 mb-0">${item.itemPrice?.toLocaleString('es-CL')}</p>
                   <button
                     className="btn btn-light"
                     onClick={() => onProductClick(item)}

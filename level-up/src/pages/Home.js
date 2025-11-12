@@ -82,29 +82,18 @@ function Home() {
 
   };
 
-
-
+  
   const groupProductsByCategory = (productsList) => {
+    return productsList.reduce((acc, product) => {
+      const category = product.itemCategory || 'Otros';
 
-      return productsList.reduce((acc, product) => {
-
-        const category = product.itemCategory || 'Otros';
-
-
-
-        if (!acc[category]) {
-
-          acc[category] = [];
-
-        }
-
-        acc[category].push(product);
-
-        return acc;
-
-      }, {});
-
-    };
+      if (!acc[category]) {
+        acc[category] = [];
+      }
+      acc[category].push(product);
+      return acc;
+    }, {});
+  };
 
 
 
@@ -126,51 +115,42 @@ function Home() {
 
       try {
 
+        setIsLoading(true);
+
         const response = await axios.get('http://localhost:8080/api/inventario');
 
+        console.log('📦 Datos recibidos del backend:', response.data);
 
-
-        // --- ¡CORRECCIÓN DEFENSIVA! ---
-
-
-
-        // 1. Verificamos de forma segura si la ruta de datos existe.
-
-        // Usamos 'optional chaining' (?.) para evitar errores si _embedded no existe.
-
-        const productsList = response.data?._embedded?.inventario;
-
-
-
-        // 2. Verificamos si 'productsList' es realmente un array
-
-        if (Array.isArray(productsList)) {
-
-            // Si es un array (incluso vacío), agrupamos
-
-            const groupedProducts = groupProductsByCategory(productsList);
-
-            setProductsData(groupedProducts);
-
-        } else {
-
-            // Si no es un array (es undefined o la tienda está vacía),
-
-            // establecemos los datos como un objeto vacío para evitar errores.
-
-            setProductsData({});
-
+        
+        // Extraer los productos de la estructura HAL de Spring Boot
+        let productsList = [];
+        
+        if (response.data._embedded && response.data._embedded.inventarioList) {
+          // Formato HAL de Spring Data REST
+          productsList = response.data._embedded.inventarioList;
+        } else if (Array.isArray(response.data)) {
+          // Array directo
+          productsList = response.data;
+        } else if (response.data.content && Array.isArray(response.data.content)) {
+          // Formato paginado de Spring
+          productsList = response.data.content;
         }
 
+        console.log('� Lista de productos:', productsList);
 
+        // Agrupar productos por categoría
+        const grouped = groupProductsByCategory(productsList);
+        console.log('📂 Productos agrupados:', grouped);
+        
+        setProductsData(grouped);
+        setIsLoading(false);
 
       } catch (err) {
 
-        // Si hay un error de red REAL (ej. CORS, backend caído), irá aquí.
+        console.error('❌ Error al cargar productos:', err);
+        console.error('Detalles:', err.response?.data);
 
         setError(err);
-
-      } finally {
 
         setIsLoading(false);
 
@@ -183,6 +163,7 @@ function Home() {
     fetchProducts();
 
   }, []); // Solo se ejecuta 1 vez
+
 
 
 
@@ -408,7 +389,7 @@ function Home() {
 
                     <motion.div
 
-                      key={product.titulo}
+                      key={product.itemTitle}
 
                       initial={{ opacity: 0, x: 20 }}
 
@@ -446,11 +427,11 @@ function Home() {
 
                         <img
 
-                          src={product.imagen}
+                          src={product.itemImageLink}
 
                           className="card-img-top"
 
-                          alt={product.titulo}
+                          alt={product.itemTitle}
 
                           style={{
 
@@ -486,7 +467,7 @@ function Home() {
 
                           }}>
 
-                            {product.titulo}
+                            {product.itemTitle}
 
                           </h5>
 
@@ -498,9 +479,9 @@ function Home() {
                             WebkitBoxOrient: "vertical",
                             flexGrow: 1
                           }}>
-                            {product.descripcion}
+                            {product.itemDescription}
                           </p>
-                          <p className="fw-bold text-white mt-auto mb-0">{product.precio}</p>
+                          <p className="fw-bold text-white mt-auto mb-0">${product.itemPrice?.toLocaleString('es-CL')}</p>
                         </div>
 
                         <div className="producto-overlay">
@@ -543,7 +524,7 @@ function Home() {
 
             <div className="modal-content bg-dark text-white border-secondary">
               <div className="modal-header border-secondary">
-            <h5 className="modal-title">{selectedProduct.titulo}</h5>
+            <h5 className="modal-title">{selectedProduct.itemTitle}</h5>
 
             <button
 
@@ -555,15 +536,15 @@ function Home() {
               <div className="modal-body text-center">
 
             <img
-              src={selectedProduct.imagen}
-              alt={selectedProduct.titulo}
+              src={selectedProduct.itemImageLink}
+              alt={selectedProduct.itemTitle}
               className="img-fluid rounded mb-3"
               style={{ maxHeight: "300px", objectFit: "cover" }}
 
             />
-            <p>{selectedProduct.descripcion}</p>
-            <p className="fw-bold">{selectedProduct.precio}</p>
-            <p className="text-secondary">Stock: {selectedProduct.stock}</p>
+            <p>{selectedProduct.itemDescription}</p>
+            <p className="fw-bold">${selectedProduct.itemPrice?.toLocaleString('es-CL')}</p>
+            <p className="text-secondary">Stock: {selectedProduct.itemQuantity}</p>
             <button
               className="btn btn-primary w-100 mt-2"
               onClick={() => handleAddToCart(selectedProduct)}
@@ -583,4 +564,4 @@ function Home() {
 }
 
 
-export default Home
+export default Home;
