@@ -12,7 +12,7 @@ function Cart() {
 
   // Calcula el total
   const total = cartItems.reduce((acc, item) => {
-    const price = parseFloat(item.precio.replace(/[^0-9,-]+/g, "").replace(",", "."));
+    const price = parseFloat(item.itemPrice) || 0;
     return acc + (price * item.cantidad);
   }, 0);
 
@@ -138,7 +138,7 @@ function Cart() {
             <AnimatePresence mode="popLayout">
               {cartItems.map((item, index) => (
                 <motion.li
-                  key={item.titulo}
+                  key={item.itemTitle}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 20, height: 0 }}
@@ -148,8 +148,8 @@ function Cart() {
                   {/* info producto */}
                   <div className="d-flex align-items-center">
                     <img 
-                      src={item.imagen} 
-                      alt={item.titulo} 
+                      src={item.itemImageLink} 
+                      alt={item.itemTitle} 
                       style={{ 
                         width: '80px', 
                         height: '80px', 
@@ -159,16 +159,16 @@ function Cart() {
                       }} 
                     />
                     <div>
-                      <h6 className="mb-1">{item.titulo}</h6>
-                      <small className="text-secondary">{item.precio}</small>
+                      <h6 className="mb-1">{item.itemTitle}</h6>
+                      <small className="text-secondary">${item.itemPrice?.toLocaleString('es-CL')}</small>
                       <div className="text-primary small mt-1">
                         Subtotal: ${new Intl.NumberFormat('es-CL').format(
-                          parseFloat(item.precio.replace(/[^0-9,-]+/g, "").replace(",", ".")) * item.cantidad
+                          (item.itemPrice || 0) * item.cantidad
                         )} CLP
                       </div>
                       {/* Indicador de stock */}
                       {(() => {
-                        const stockNumber = parseInt(item.stock.match(/\d+/)?.[0] || 0);
+                        const stockNumber = parseInt(item.itemQuantity) || 0;
                         const isMaxStock = item.cantidad >= stockNumber;
                         return (
                           <small className={`d-block mt-1 ${isMaxStock ? 'text-warning' : 'text-secondary'}`}>
@@ -185,7 +185,7 @@ function Cart() {
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                       className="btn btn-outline-secondary btn-sm"
-                      onClick={() => updateQuantity(item.titulo, item.cantidad - 1)}
+                      onClick={() => updateQuantity(item.itemTitle, item.cantidad - 1)}
                     >
                       -
                     </motion.button>
@@ -196,13 +196,13 @@ function Cart() {
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                       className="btn btn-outline-secondary btn-sm"
-                      onClick={() => updateQuantity(item.titulo, item.cantidad + 1)}
+                      onClick={() => updateQuantity(item.itemTitle, item.cantidad + 1)}
                       disabled={(() => {
-                        const stockNumber = parseInt(item.stock.match(/\d+/)?.[0] || 0);
+                        const stockNumber = parseInt(item.itemQuantity) || 0;
                         return item.cantidad >= stockNumber;
                       })()}
                       style={(() => {
-                        const stockNumber = parseInt(item.stock.match(/\d+/)?.[0] || 0);
+                        const stockNumber = parseInt(item.itemQuantity) || 0;
                         return item.cantidad >= stockNumber ? { opacity: 0.5, cursor: 'not-allowed' } : {};
                       })()}
                     >
@@ -213,7 +213,7 @@ function Cart() {
                       whileHover={{ scale: 1.05, backgroundColor: '#dc3545' }}
                       whileTap={{ scale: 0.95 }}
                       className="btn btn-outline-danger btn-sm ms-2"
-                      onClick={() => removeFromCart(item.titulo)}
+                      onClick={() => removeFromCart(item.itemTitle)}
                     >
                       🗑️ Eliminar
                     </motion.button>

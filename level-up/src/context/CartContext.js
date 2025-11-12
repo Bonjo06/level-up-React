@@ -59,10 +59,10 @@ export const CartProvider = ({ children }) => {
   // Función para añadir productos al carrito
   const addToCart = (product) => {
     setCartItems(prevItems => {
-      const existingItem = prevItems.find(item => item.titulo === product.titulo);
+      const existingItem = prevItems.find(item => item.itemTitle === product.itemTitle);
       
-      // Extraer número del stock (ej: "10 unidades" -> 10)
-      const stockNumber = parseInt(product.stock.match(/\d+/)?.[0] || 0);
+      // Obtener el stock del producto (ahora es itemQuantity)
+      const stockNumber = parseInt(product.itemQuantity) || 0;
       
       if (existingItem) {
         // Validar que no supere el stock
@@ -72,7 +72,7 @@ export const CartProvider = ({ children }) => {
         }
         
         return prevItems.map(item =>
-          item.titulo === product.titulo
+          item.itemTitle === product.itemTitle
           ? { ...item, cantidad: item.cantidad + 1 }
           : item
         );
@@ -88,17 +88,17 @@ export const CartProvider = ({ children }) => {
   };
 
   //Funcion para botones de añadir y quitar productos
-  const updateQuantity = (productTitulo, newQuantity) => {
+  const updateQuantity = (productItemTitle, newQuantity) => {
     setCartItems(prevItems => {
       if (newQuantity < 1) {
         alert("Producto eliminado del carrito");
-        return prevItems.filter(item => item.titulo !== productTitulo);
+        return prevItems.filter(item => item.itemTitle !== productItemTitle);
       }
 
       // Validar stock antes de actualizar
-      const product = prevItems.find(item => item.titulo === productTitulo);
+      const product = prevItems.find(item => item.itemTitle === productItemTitle);
       if (product) {
-        const stockNumber = parseInt(product.stock.match(/\d+/)?.[0] || 0);
+        const stockNumber = parseInt(product.itemQuantity) || 0;
         
         if (newQuantity > stockNumber) {
           alert(`No puedes añadir más de ${stockNumber} unidades. Stock máximo alcanzado.`);
@@ -107,7 +107,7 @@ export const CartProvider = ({ children }) => {
       }
 
       return prevItems.map(item =>
-        item.titulo === productTitulo
+        item.itemTitle === productItemTitle
         ? { ...item, cantidad: newQuantity }
         : item
       );
@@ -122,10 +122,10 @@ export const CartProvider = ({ children }) => {
   }
 
   // Función para eliminar productos
-  const removeFromCart = (productTitulo) => {
+  const removeFromCart = (productItemTitle) => {
     alert("Producto eliminado del carrito");
     setCartItems(prevItems => {
-      return prevItems.filter(item => item.titulo !== productTitulo);
+      return prevItems.filter(item => item.itemTitle !== productItemTitle);
     });
   };
 
