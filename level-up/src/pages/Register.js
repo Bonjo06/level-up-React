@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './Login.css'; // Reutilizamos los estilos del video
 
 function Register() {
@@ -10,7 +11,7 @@ function Register() {
   
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!name || !email || !password || !confirmedPassword) {
@@ -26,28 +27,27 @@ function Register() {
       return;
     }
 
-    // Obtener usuarios existentes
-    const usuarios = JSON.parse(localStorage.getItem('usuarios') || '[]');
-    
-    // Verificar si el email ya está registrado
-    if (usuarios.find(user => user.email === email)) {
-      alert('Este correo ya se encuentra registrado.');
-      return;
+    try {
+      // Llamar al backend de Spring Boot
+      const response = await axios.post('http://localhost:8080/api/auth/register', {
+        name: name.trim(),  // Cambiado de "nombre" a "name"
+        email: email.trim(),
+        password: password
+      });
+
+      if (response.data.success) {
+        alert('Su cuenta se ha registrado exitosamente.');
+        navigate('/iniciarsesion');
+      }
+    } catch (error) {
+      console.error('Error al registrar:', error);
+      
+      if (error.response) {
+        alert(error.response.data.message || 'Error al registrar usuario.');
+      } else {
+        alert('Error al registrar. Intenta nuevamente.');
+      }
     }
-    
-    // Agregar nuevo usuario
-    usuarios.push({
-      name: name.trim(),
-      email: email.trim(),
-      password: password,
-      fechaRegistro: new Date().toLocaleString('es-CL')
-    });
-    
-    // Guardar array actualizado
-    localStorage.setItem('usuarios', JSON.stringify(usuarios));
-    
-    alert('Su cuenta se ha registrado exitosamente.');
-    navigate('/iniciarsesion');
   };
 
   return (

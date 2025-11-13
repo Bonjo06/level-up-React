@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './Login.css'; // Reutilizamos los estilos del video
 
 function PasswordReset() {
@@ -8,7 +9,7 @@ function PasswordReset() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!email || !newPassword || !confirmPassword) {
@@ -20,27 +21,32 @@ function PasswordReset() {
       return;
     }
     if (newPassword !== confirmPassword) {
-      alert('Las contraseñas no son iguales.');
+      alert('Las contraseñas no coinciden.');
       return;
     }
 
-    // Obtener usuarios registrados
-    const usuarios = JSON.parse(localStorage.getItem('usuarios') || '[]');
-    
-    // Buscar el usuario por email
-    const usuarioIndex = usuarios.findIndex(user => user.email === email);
-    
-    if (usuarioIndex === -1) {
-      alert('El correo no está registrado.');
-      return;
-    }
+    try {
+      // Llamar al backend de Spring Boot para resetear la contraseña
+      const response = await axios.post('http://localhost:8080/api/auth/reset-password', {
+        email: email.trim(),
+        newPassword: newPassword
+      });
 
-    // Actualizar la contraseña
-    usuarios[usuarioIndex].password = newPassword;
-    localStorage.setItem('usuarios', JSON.stringify(usuarios));
-    
-    alert('Su contraseña se actualizó con éxito.');
-    navigate('/iniciarsesion');
+      if (response.data.success) {
+        alert('Su contraseña se actualizó con éxito.');
+        navigate('/iniciarsesion', { state: { message: 'Contraseña actualizada. Inicia sesión.' } });
+      }
+    } catch (error) {
+      console.error('Error al actualizar contraseña:', error);
+      
+      if (error.response) {
+        alert(error.response.data.message || 'Error al actualizar la contraseña.');
+      } else if (error.request) {
+        alert('No se pudo conectar con el servidor. Verifica que el backend esté corriendo.');
+      } else {
+        alert('Error al actualizar la contraseña. Intenta nuevamente.');
+      }
+    }
   };
 
   return (

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import './Login.css';
-// Ya no importamos 'bg' de 'assets'
+import axios from 'axios';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -22,24 +22,41 @@ function Login() {
     }
   }, [location, navigate]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email || !password) {
       alert('Por favor completa el/los campos vacíos.');
       return;
     }
 
-    // Obtener usuarios registrados
-    const usuarios = JSON.parse(localStorage.getItem('usuarios') || '[]');
-    
-    // Buscar usuario por email y contraseña
-    const usuario = usuarios.find(user => user.email === email && user.password === password);
-    
-    if (usuario) {
-      localStorage.setItem('UsuarioLogeado', email);
-      navigate('/', { state: { message: 'Sesión iniciada correctamente' } }); 
-    } else {
-      alert('Correo o clave inválidos.');
+    try {
+      // Llamar al backend de Spring Boot
+      const response = await axios.post('http://localhost:8080/api/auth/login', {
+        email: email,
+        password: password
+      });
+
+      if (response.data.success) {
+        // Guardar información del usuario en localStorage
+        localStorage.setItem('UsuarioLogeado', email);
+        localStorage.setItem('UsuarioNombre', response.data.user.name);  // Cambiado de "nombre" a "name"
+        
+        // Redirigir al home con mensaje de éxito
+        navigate('/', { state: { message: 'Sesión iniciada correctamente' } });
+      }
+    } catch (error) {
+      console.error('Error al iniciar sesión:', error);
+      
+      if (error.response) {
+        // El servidor respondió con un error
+        alert(error.response.data.message || 'Correo o contraseña inválidos.');
+      } else if (error.request) {
+        // No se recibió respuesta del servidor
+        alert('No se pudo conectar con el servidor. Verifica que el backend esté corriendo.');
+      } else {
+        // Otro tipo de error
+        alert('Error al iniciar sesión. Intenta nuevamente.');
+      }
     }
   };
 

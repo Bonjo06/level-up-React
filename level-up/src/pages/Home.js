@@ -136,18 +136,18 @@ function Home() {
           productsList = response.data.content;
         }
 
-        console.log('� Lista de productos:', productsList);
+        console.log('Lista de productos:', productsList);
 
         // Agrupar productos por categoría
         const grouped = groupProductsByCategory(productsList);
-        console.log('📂 Productos agrupados:', grouped);
+        console.log('Productos agrupados:', grouped);
         
         setProductsData(grouped);
         setIsLoading(false);
 
       } catch (err) {
 
-        console.error('❌ Error al cargar productos:', err);
+        console.error('Error al cargar productos:', err);
         console.error('Detalles:', err.response?.data);
 
         setError(err);
