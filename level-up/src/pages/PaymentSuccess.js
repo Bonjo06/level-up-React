@@ -29,12 +29,35 @@ function PaymentSuccess() {
   const displayVenta = pedidoGuardado && Array.isArray(pedidoGuardado.venta) && pedidoGuardado.venta.length ? pedidoGuardado.venta : venta;
 
   useEffect(() => {
-    // Limpiar el carrito después de un pago exitoso y guardar productos comprados
+    // Limpiar el carrito después de un pago exitoso y actualizar estado de orden
     if (buyOrder && amount) {
+      // Obtener el orderId que guardamos antes de redirigir a Transbank
+      const pendingOrderId = localStorage.getItem('pendingOrderId');
+      
+      if (pendingOrderId) {
+        // Actualizar el estado de la orden en Spring Boot a PAID
+        fetch(`http://localhost:8080/purchase-orders/${pendingOrderId}/status?status=PAID`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log('✅ Estado de orden actualizado:', data);
+          // Limpiar el orderId pendiente
+          localStorage.removeItem('pendingOrderId');
+        })
+        .catch(error => {
+          console.error('❌ Error al actualizar estado de orden:', error);
+        });
+      }
+      
       // Guardamos el pedido en localStorage para historial incluyendo los productos (tomamos `venta` ya calculada)
       const pedidos = JSON.parse(localStorage.getItem('pedidos') || '[]');
       pedidos.push({
         ordenCompra: buyOrder,
+        orderId: pendingOrderId,
         monto: amount,
         venta: venta,
         codigoAutorizacion: authCode,

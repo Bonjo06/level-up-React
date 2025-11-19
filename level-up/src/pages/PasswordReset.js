@@ -2,55 +2,84 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Login.css'; // Reutilizamos los estilos del video
+import Toast from '../components/Toast';
 
 function PasswordReset() {
   const [email, setEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const navigate = useNavigate();
+  
+  // Estados para el Toast
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState('success');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!email || !newPassword || !confirmPassword) {
-      alert('Completa todos los campos.');
+      setToastMessage('Completa todos los campos.');
+      setToastType('warning');
+      setShowToast(true);
       return;
     }
     if (newPassword.length < 4 || newPassword.length > 12) {
-      alert('La nueva contraseña debe tener entre 4 y 12 caracteres.');
+      setToastMessage('La nueva contraseña debe tener entre 4 y 12 caracteres.');
+      setToastType('warning');
+      setShowToast(true);
       return;
     }
     if (newPassword !== confirmPassword) {
-      alert('Las contraseñas no coinciden.');
+      setToastMessage('Las contraseñas no coinciden.');
+      setToastType('warning');
+      setShowToast(true);
       return;
     }
 
     try {
       // Llamar al backend de Spring Boot para resetear la contraseña
-      const response = await axios.post('http://localhost:8080/api/auth/reset-password', {
+      await axios.post('http://localhost:8080/api/auth/reset-password', {
         email: email.trim(),
         newPassword: newPassword
       });
 
-      if (response.data.success) {
-        alert('Su contraseña se actualizó con éxito.');
+      setToastMessage('¡Contraseña actualizada exitosamente! Redirigiendo...');
+      setToastType('success');
+      setShowToast(true);
+      
+      // Redirigir después de 2 segundos
+      setTimeout(() => {
         navigate('/iniciarsesion', { state: { message: 'Contraseña actualizada. Inicia sesión.' } });
-      }
+      }, 2000);
+      
     } catch (error) {
       console.error('Error al actualizar contraseña:', error);
       
+      let errorMessage = 'Error al actualizar la contraseña. Intenta nuevamente.';
+      
       if (error.response) {
-        alert(error.response.data.message || 'Error al actualizar la contraseña.');
+        errorMessage = error.response.data.message || 'Error al actualizar la contraseña.';
       } else if (error.request) {
-        alert('No se pudo conectar con el servidor. Verifica que el backend esté corriendo.');
-      } else {
-        alert('Error al actualizar la contraseña. Intenta nuevamente.');
+        errorMessage = 'No se pudo conectar con el servidor. Verifica que el backend esté corriendo.';
       }
+      
+      setToastMessage(errorMessage);
+      setToastType('error');
+      setShowToast(true);
     }
   };
 
   return (
     <div className="login-page">
+      
+      {/* Toast Component */}
+      <Toast 
+        show={showToast}
+        message={toastMessage}
+        type={toastType}
+        onClose={() => setShowToast(false)}
+      />
       
       {/* El video de fondo */}
       <video 

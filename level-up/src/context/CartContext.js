@@ -24,6 +24,13 @@ const getInitialCart = () => {
 // 3. Creamos el Proveedor (Provider) que manejará la lógica
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState(getInitialCart()); 
+  
+  // Estados para notificaciones del carrito
+  const [cartNotification, setCartNotification] = useState({
+    show: false,
+    message: '',
+    type: 'info'
+  });
 
   // --- MODIFICACIÓN: Guardar en localStorage con clave específica del usuario ---
   useEffect(() => {
@@ -55,6 +62,14 @@ export const CartProvider = ({ children }) => {
       clearInterval(interval);
     };
   }, [cartItems]);
+  
+  // Función para mostrar notificación
+  const showNotification = (message, type = 'info') => {
+    setCartNotification({ show: true, message, type });
+    setTimeout(() => {
+      setCartNotification({ show: false, message: '', type: 'info' });
+    }, 5000);
+  };
 
   // Función para añadir productos al carrito
   const addToCart = (product) => {
@@ -67,9 +82,12 @@ export const CartProvider = ({ children }) => {
       if (existingItem) {
         // Validar que no supere el stock
         if (existingItem.cantidad >= stockNumber) {
-          alert(`No hay más stock disponible. Stock máximo: ${stockNumber} unidades`);
+          showNotification(`No hay más stock disponible. Stock máximo: ${stockNumber} unidades`, 'warning');
           return prevItems;
         }
+        
+        // Producto añadido exitosamente (cantidad incrementada)
+        showNotification(`Producto añadido al carrito`, 'success');
         
         return prevItems.map(item =>
           item.itemTitle === product.itemTitle
@@ -79,9 +97,13 @@ export const CartProvider = ({ children }) => {
       } else {
         // Primera vez que se añade el producto
         if (stockNumber < 1) {
-          alert('Producto sin stock disponible');
+          showNotification('Producto sin stock disponible', 'warning');
           return prevItems;
         }
+        
+        // Producto añadido exitosamente (primera vez)
+        showNotification(`Producto añadido al carrito`, 'success');
+        
         return [...prevItems, { ...product, cantidad: 1 }];
       }
     });
@@ -91,7 +113,7 @@ export const CartProvider = ({ children }) => {
   const updateQuantity = (productItemTitle, newQuantity) => {
     setCartItems(prevItems => {
       if (newQuantity < 1) {
-        alert("Producto eliminado del carrito");
+        showNotification("Producto eliminado del carrito", 'info');
         return prevItems.filter(item => item.itemTitle !== productItemTitle);
       }
 
@@ -101,7 +123,7 @@ export const CartProvider = ({ children }) => {
         const stockNumber = parseInt(product.itemQuantity) || 0;
         
         if (newQuantity > stockNumber) {
-          alert(`No puedes añadir más de ${stockNumber} unidades. Stock máximo alcanzado.`);
+          showNotification(`No puedes añadir más de ${stockNumber} unidades. Stock máximo alcanzado.`, 'warning');
           return prevItems;
         }
       }
@@ -116,14 +138,12 @@ export const CartProvider = ({ children }) => {
 
   //Funcion para vaciar el carrito
   const clearCart = () => {
-    if(window.confirm("¿Estás seguro de que deseas vaciar el carrito?")) {
-      setCartItems([]);
-    }
+    setCartItems([]);
   }
 
   // Función para eliminar productos
   const removeFromCart = (productItemTitle) => {
-    alert("Producto eliminado del carrito");
+    showNotification("Producto eliminado del carrito", 'info');
     setCartItems(prevItems => {
       return prevItems.filter(item => item.itemTitle !== productItemTitle);
     });
@@ -135,7 +155,8 @@ export const CartProvider = ({ children }) => {
     addToCart,
     removeFromCart,
     updateQuantity,
-    clearCart
+    clearCart,
+    cartNotification
   };
 
   return (

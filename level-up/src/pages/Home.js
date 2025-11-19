@@ -18,6 +18,8 @@ import ScrollToTop from '../components/ScrollToTop';
 
 import axios from 'axios';
 
+import Toast from '../components/Toast';
+
 
 
 function Home() {
@@ -37,6 +39,11 @@ function Home() {
   const [error, setError] = useState(null);
 
   // --- FIN DE NUEVOS ESTADOS ---
+  
+  // Estados para el Toast
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState('success');
 
 
 
@@ -44,9 +51,18 @@ function Home() {
 
   const navigate = useNavigate();
 
-  const { addToCart } = useCart();
+  const { addToCart, cartNotification } = useCart();
 
   const hasShownAlertRef = useRef(false); // Referencia para la alerta
+  
+  // Sincronizar las notificaciones del carrito con el Toast local
+  useEffect(() => {
+    if (cartNotification.show) {
+      setToastMessage(cartNotification.message);
+      setToastType(cartNotification.type);
+      setShowToast(true);
+    }
+  }, [cartNotification]);
 
 
 
@@ -181,7 +197,9 @@ function Home() {
 
       hasShownAlertRef.current = true;
 
-      alert(message);
+      setToastMessage(message);
+      setToastType('success');
+      setShowToast(true);
 
       navigate(location.pathname, { replace: true, state: {} });
 
@@ -225,7 +243,13 @@ function Home() {
 
     <div className="bg-dark text-white min-vh-100">
 
-
+      {/* Toast Component */}
+      <Toast 
+        show={showToast}
+        message={toastMessage}
+        type={toastType}
+        onClose={() => setShowToast(false)}
+      />
 
       {/* (Navbar) */}
 

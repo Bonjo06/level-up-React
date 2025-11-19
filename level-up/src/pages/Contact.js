@@ -1,18 +1,51 @@
-import React, { useState } from 'react';
-
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Breadcrumbs from '../components/Breadcrumbs';
 import ScrollToTop from '../components/ScrollToTop';
 import { MailIcon, PhoneIcon, ClockIcon } from '../components/FeatureIcons';
+import Toast from '../components/Toast';
+import axios from 'axios';
 
 function Contact() {
+  const navigate = useNavigate();
+  
   // 1. Estados para cada campo del formulario
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const [errors, setErrors] = useState({});
   
-  // 2. Usamos 'navigate' para redirigir después de enviar
+  // Estados para el Toast
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState('success'); // 'success' o 'error'
+  
+  // Estado para verificar autenticación
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userEmail, setUserEmail] = useState('');
+  
+  // Verificar si el usuario está logueado al cargar el componente
+  useEffect(() => {
+    const loggedUserEmail = localStorage.getItem('UsuarioLogeado');
+    
+    if (!loggedUserEmail) {
+      // Usuario no logueado - mostrar mensaje y redirigir
+      setToastMessage('Debes iniciar sesión para enviar un mensaje de contacto.');
+      setToastType('warning');
+      setShowToast(true);
+      
+      // Redirigir al login después de 3 segundos
+      setTimeout(() => {
+        navigate('/iniciarsesion');
+      }, 5000);
+    } else {
+      // Usuario autenticado
+      setIsAuthenticated(true);
+      setUserEmail(loggedUserEmail);
+    }
+  }, [navigate]);
   
 
   // 3. Validación mejorada
@@ -28,6 +61,10 @@ function Contact() {
     } else if (!/\S+@\S+\.\S+/.test(email)) {
       newErrors.email = 'El correo no es válido';
     }
+
+    if (!subject.trim()) {
+      newErrors.subject = 'El asunto es requerido';
+    }
     
     if (!message.trim()) {
       newErrors.message = 'El mensaje es requerido';
@@ -40,39 +77,108 @@ function Contact() {
   };
 
   // 4. Función que se ejecuta al presionar "Enviar"
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Verificar autenticación antes de enviar
+    if (!isAuthenticated || !userEmail) {
+      setToastMessage('Debes iniciar sesión para enviar un mensaje.');
+      setToastType('error');
+      setShowToast(true);
+      setTimeout(() => navigate('/login'), 2000);
+      return;
+    }
 
     if (!validateForm()) {
       return;
     }
-    
-    // Guardar datos en localStorage
-    const contactData = {
-      name: name.trim(),
-      email: email.trim(),
-      message: message.trim(),
-      fecha: new Date().toLocaleString('es-CL')
-    };
 
-    const mensajes = JSON.parse(localStorage.getItem('contactSubmissions') || '[]');
-    mensajes.push(contactData);
-    localStorage.setItem('contactSubmissions', JSON.stringify(mensajes));
-    
-    alert('¡Gracias por tu mensaje! Nos contactaremos contigo dentro de la brevedad.');
+    try {
+      // Construir la URL con el parámetro userEmail
+      const url = `http://localhost:8080/api/contact-messages?userEmail=${encodeURIComponent(userEmail)}`;
+      
+      // Llamar al backend de Spring Boot
+      const response = await axios.post(url, {
+        name: name,
+        email: email,      
+        subject: subject,
+        message: message
+      });
 
-    setName('');
-    setEmail('');
-    setMessage('');
-    setErrors({});
+      console.log('Respuesta del servidor:', response); // Para debug
+      
+      // Si llegó aquí sin errores, el mensaje se envió correctamente
+      // Mostrar toast de éxito
+      setToastMessage('¡Mensaje enviado correctamente! Te responderemos pronto.');
+      setToastType('success');
+      setShowToast(true);
+      
+      // Limpiar el formulario
+      setName('');
+      setEmail('');
+      setSubject('');
+      setMessage('');
+      setErrors({});
+      
+    } catch (error) {
+      console.error('Error al enviar formulario:', error);
+      
+      // Mostrar toast de error
+      if (error.response) {
+        setToastMessage(error.response.data.message || 'Error al enviar el mensaje.');
+      } else if (error.request) {
+        setToastMessage('No se pudo conectar con el servidor. Verifica que el backend esté corriendo.');
+      } else {
+        setToastMessage('Error al enviar el mensaje. Intenta nuevamente.');
+      }
+      setToastType('error');
+      setShowToast(true);
+    }
   };
 
   return (
     <div className="container my-5">
       <Breadcrumbs items={[{ label: 'Contacto', path: '/contacto' }]} />
 
-      {/* Hero con animación */}
-      <motion.div 
+      {/* Toast Component */}
+      <Toast 
+        show={showToast}
+        message={toastMessage}
+        type={toastType}
+        onClose={() => setShowToast(false)}
+      />
+
+      {/* Mostrar contenido solo si está autenticado */}
+      {!isAuthenticated ? (
+        <motion.div 
+          className="row"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="col-lg-6 offset-lg-3">
+            <div className="card bg-dark border-warning text-center p-5">
+              <div className="text-warning mb-3">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="8" x2="12" y2="12"></line>
+                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+              </div>
+              <h3 className="text-white mb-3">Autenticación Requerida</h3>
+              <p className="text-secondary mb-4">
+                Debes iniciar sesión para poder enviar un mensaje de contacto.
+              </p>
+              <p className="text-secondary small">
+                Serás redirigido al inicio de sesión en unos segundos...
+              </p>
+            </div>
+          </div>
+        </motion.div>
+      ) : (
+        <>
+          {/* Hero con animación */}
+          <motion.div 
         className="row mb-5"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -137,6 +243,26 @@ function Contact() {
                   {errors.email && <div className="invalid-feedback">{errors.email}</div>}
                 </div>
 
+                {/* Asunto */}
+                <div className="mb-4">
+                  <label htmlFor="subject" className="form-label fw-semibold">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="me-2">
+                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                      <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                    Asunto
+                  </label>
+                  <input
+                    type="text"
+                    className={`form-control bg-dark text-white border-secondary ${errors.subject ? 'is-invalid' : ''}`}
+                    id="subject"
+                    placeholder="Asunto"
+                    value={subject}
+                    onChange={(e) => setSubject(e.target.value)}
+                  />
+                  {errors.subject && <div className="invalid-feedback">{errors.subject}</div>}
+                </div>
+
                 {/* Mensaje */}
                 <div className="mb-4">
                   <label htmlFor="message" className="form-label fw-semibold">
@@ -145,7 +271,7 @@ function Contact() {
                     </svg>
                     Mensaje
                   </label>
-                  <textarea
+                  <textarea 
                     className={`form-control bg-dark text-white border-secondary ${errors.message ? 'is-invalid' : ''}`}
                     id="message"
                     rows="5"
@@ -207,6 +333,8 @@ function Contact() {
           </motion.div>
         </div>
       </motion.div>
+      </>
+      )}
 
       <ScrollToTop />
     </div>

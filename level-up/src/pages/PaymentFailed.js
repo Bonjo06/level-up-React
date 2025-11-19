@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { AlertCircleIcon } from '../components/FeatureIcons';
@@ -7,6 +7,30 @@ function PaymentFailed() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const reason = searchParams.get('reason');
+
+  useEffect(() => {
+    // Cancelar la orden pendiente si el pago falla
+    const pendingOrderId = localStorage.getItem('pendingOrderId');
+    
+    if (pendingOrderId) {
+      // Actualizar el estado de la orden en Spring Boot a CANCELLED
+      fetch(`http://localhost:8080/purchase-orders/${pendingOrderId}/status?status=CANCELLED`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('✅ Orden cancelada:', data);
+        // Limpiar el orderId pendiente
+        localStorage.removeItem('pendingOrderId');
+      })
+      .catch(error => {
+        console.error('❌ Error al cancelar orden:', error);
+      });
+    }
+  }, []);
 
   const getErrorMessage = (code) => {
     const messages = {

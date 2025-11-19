@@ -1,14 +1,49 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../context/CartContext';
 import Breadcrumbs from '../components/Breadcrumbs';
 import ScrollToTop from '../components/ScrollToTop';
 import { ShoppingCartIcon } from '../components/FeatureIcons';
+import Toast from '../components/Toast';
 
 function Cart() {
 
-  const { cartItems, removeFromCart, updateQuantity, clearCart } = useCart();
+  const { cartItems, removeFromCart, updateQuantity, clearCart, cartNotification } = useCart();
   const [isProcessing, setIsProcessing] = useState(false);
+  
+  // Estados para el Toast
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState('success');
+  
+  // Estado para el modal de confirmación
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  
+  // Sincronizar las notificaciones del carrito con el Toast
+  useEffect(() => {
+    if (cartNotification.show) {
+      setToastMessage(cartNotification.message);
+      setToastType(cartNotification.type);
+      setShowToast(true);
+    }
+  }, [cartNotification]);
+  
+  // Función para confirmar limpieza del carrito
+  const handleClearCartClick = () => {
+    setShowConfirmModal(true);
+  };
+  
+  const confirmClearCart = () => {
+    clearCart();
+    setShowConfirmModal(false);
+    setToastMessage('Carrito limpiado correctamente.');
+    setToastType('success');
+    setShowToast(true);
+  };
+  
+  const cancelClearCart = () => {
+    setShowConfirmModal(false);
+  };
 
   // Calcula el total
   const total = cartItems.reduce((acc, item) => {
@@ -21,32 +56,84 @@ function Cart() {
     // Verificar que haya un usuario logueado
     const userEmail = localStorage.getItem('UsuarioLogeado');
     if (!userEmail) {
-      alert('Debes iniciar sesión para realizar una compra');
-      window.location.href = '/iniciarsesion';
+      setToastMessage('Debes iniciar sesión para realizar una compra.');
+      setToastType('warning');
+      setShowToast(true);
+      setTimeout(() => {
+        window.location.href = '/iniciarsesion';
+      }, 2000);
       return;
     }
 
     if (cartItems.length === 0) {
-      alert('Tu carrito está vacío');
+      setToastMessage('Tu carrito está vacío.');
+      setToastType('warning');
+      setShowToast(true);
       return;
     }
 
     setIsProcessing(true);
 
     try {
-      // Generar un ID único para la orden (timestamp + random)
-      const buyOrder = `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      // PASO 1: Crear la orden en la base de datos
+      console.log('📝 Creando orden en la base de datos...');
+      console.log('📋 Items en el carrito:', cartItems);
       
-      // Preparar datos para enviar al backend
+      // Preparar los items de la orden
+      const orderItems = cartItems.map(item => {
+        console.log('🔍 Item:', item);
+        return {
+          productId: item.id, // ID del producto en la tabla inventario
+          productTitle: item.itemTitle,
+          unitPrice: parseFloat(item.itemPrice),
+          quantity: item.cantidad
+        };
+      });
+      
+      // Preparar datos de la orden
+      const orderData = {
+        userEmail: userEmail,
+        total: parseFloat(total),
+        shippingAddress: "Dirección de envío", // Puedes agregar un campo para esto después
+        items: orderItems
+      };
+      
+      console.log('📦 Datos de la orden a enviar:', orderData);
+      
+      // Crear la orden en Spring Boot
+      const orderResponse = await fetch('http://localhost:8080/purchase-orders/create-from-cart', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderData)
+      });
+      
+      const orderResult = await orderResponse.json();
+      
+      if (!orderResult.success) {
+        throw new Error(orderResult.message || 'Error al crear la orden');
+      }
+      
+      console.log('✅ Orden creada:', orderResult);
+      
+      // Guardar el orderId en localStorage para usarlo después
+      localStorage.setItem('pendingOrderId', orderResult.orderId);
+      
+      // PASO 2: Crear la transacción de pago con Transbank
+      console.log('💳 Iniciando transacción con Transbank...');
+      
+      const buyOrder = orderResult.orderNumber; // Usar el número de orden generado
+      
       const paymentData = {
-        amount: Math.round(total), // Transbank requiere número entero (sin decimales)
+        amount: Math.round(total),
         buyOrder: buyOrder,
-        sessionId: userEmail // Usamos el email del usuario
+        sessionId: userEmail
       };
 
-      console.log('📦 Iniciando pago:', paymentData);
+      console.log('📦 Datos de pago:', paymentData);
 
-      // Llamar al backend para crear la transacción
+      // Llamar al backend de Transbank
       const response = await fetch('http://localhost:5000/api/payment/create', {
         method: 'POST',
         headers: {
@@ -59,6 +146,9 @@ function Cart() {
 
       if (data.success) {
         console.log('✅ Transacción creada:', data);
+        
+        // Limpiar el carrito antes de redirigir
+        clearCart();
         
         // Crear un formulario oculto para redirigir a Transbank
         const form = document.createElement('form');
@@ -76,18 +166,90 @@ function Cart() {
         // Redirigir a Transbank
         form.submit();
       } else {
-        throw new Error(data.error || 'Error al crear la transacción');
+        throw new Error(data.error || 'Error al crear la transacción de pago');
       }
 
     } catch (error) {
       console.error('❌ Error al procesar pago:', error);
-      alert('Error al procesar el pago. Por favor intenta nuevamente.');
+      setToastMessage(error.message || 'Error al procesar el pago. Por favor intenta nuevamente.');
+      setToastType('error');
+      setShowToast(true);
       setIsProcessing(false);
     }
   };
 
   return (
     <div className="container my-5">
+      
+      {/* Toast Component */}
+      <Toast 
+        show={showToast}
+        message={toastMessage}
+        type={toastType}
+        onClose={() => setShowToast(false)}
+      />
+      
+      {/* Modal de Confirmación Animado */}
+      <AnimatePresence>
+        {showConfirmModal && (
+          <>
+            {/* Backdrop semi-transparente */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="position-fixed top-0 start-0 w-100 h-100"
+              style={{ 
+                zIndex: 1050,
+                backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                backdropFilter: 'blur(2px)'
+              }}
+              onClick={cancelClearCart}
+            />
+            
+            {/* Modal */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, y: -50 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.8, y: 50 }}
+              transition={{ duration: 0.3, type: "spring", damping: 20 }}
+              className="position-fixed top-50 start-50 translate-middle"
+              style={{ zIndex: 1051, maxWidth: '400px', width: '90%' }}
+            >
+              <div className="card bg-dark text-white border-danger shadow-lg">
+                <div className="card-header bg-danger text-white d-flex align-items-center">
+                  <span className="fs-4 me-2">⚠️</span>
+                  <h5 className="mb-0">Confirmar Acción</h5>
+                </div>
+                <div className="card-body">
+                  <p className="mb-0">¿Estás seguro de que deseas limpiar el carrito?</p>
+                  <p className="text-secondary small mt-2">Todos los productos serán eliminados.</p>
+                </div>
+                <div className="card-footer bg-dark border-secondary d-flex justify-content-end gap-2">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="btn btn-secondary"
+                    onClick={cancelClearCart}
+                  >
+                    Cancelar
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.05, backgroundColor: '#dc3545' }}
+                    whileTap={{ scale: 0.95 }}
+                    className="btn btn-danger"
+                    onClick={confirmClearCart}
+                  >
+                    Sí, limpiar
+                  </motion.button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+      
       <Breadcrumbs items={[{ label: 'Carrito', path: '/carrito' }]} />
 
       {/* Header animado */}
@@ -249,7 +411,7 @@ function Cart() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="btn btn-outline-danger"
-            onClick={clearCart}
+            onClick={handleClearCartClick}
           >
             🗑️ Limpiar Carrito
           </motion.button>

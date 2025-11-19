@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Login.css'; // Reutilizamos los estilos del video
+import Toast from '../components/Toast';
 
 function Register() {
   const [name, setName] = useState('');
@@ -10,48 +11,76 @@ function Register() {
   const [confirmedPassword, setConfirmedPassword] = useState('');
   
   const navigate = useNavigate();
+  
+  // Estados para el Toast
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState('success');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!name || !email || !password || !confirmedPassword) {
-      alert('Completa todos los campos.');
+      setToastMessage('Completa todos los campos.');
+      setToastType('warning');
+      setShowToast(true);
       return;
     }
     if (password.length < 4 || password.length > 12) {
-      alert('La contraseña debe tener entre 4 y 12 caracteres.');
+      setToastMessage('La contraseña debe tener entre 4 y 12 caracteres.');
+      setToastType('warning');
+      setShowToast(true);
       return;
     }
     if (password !== confirmedPassword) {
-      alert('Las contraseñas no coinciden.');
+      setToastMessage('Las contraseñas no coinciden.');
+      setToastType('warning');
+      setShowToast(true);
       return;
     }
 
     try {
       // Llamar al backend de Spring Boot
-      const response = await axios.post('http://localhost:8080/api/auth/register', {
-        name: name.trim(),  // Cambiado de "nombre" a "name"
+      await axios.post('http://localhost:8080/api/auth/register', {
+        name: name.trim(),
         email: email.trim(),
         password: password
       });
 
-      if (response.data.success) {
-        alert('Su cuenta se ha registrado exitosamente.');
-        navigate('/iniciarsesion');
-      }
+      setToastMessage('¡Cuenta registrada exitosamente! Redirigiendo...');
+      setToastType('success');
+      setShowToast(true);
+      
+      // Redirigir después de 2 segundos
+      setTimeout(() => {
+        navigate('/iniciarsesion', { state: { message: 'Registro exitoso. Inicia sesión.' } });
+      }, 2000);
+      
     } catch (error) {
       console.error('Error al registrar:', error);
       
+      let errorMessage = 'Error al registrar. Intenta nuevamente.';
+      
       if (error.response) {
-        alert(error.response.data.message || 'Error al registrar usuario.');
-      } else {
-        alert('Error al registrar. Intenta nuevamente.');
+        errorMessage = error.response.data.message || 'Error al registrar usuario.';
       }
+      
+      setToastMessage(errorMessage);
+      setToastType('error');
+      setShowToast(true);
     }
   };
 
   return (
     <div className="login-page">
+      
+      {/* Toast Component */}
+      <Toast 
+        show={showToast}
+        message={toastMessage}
+        type={toastType}
+        onClose={() => setShowToast(false)}
+      />
       
       {/* El video de fondo */}
       <video 
