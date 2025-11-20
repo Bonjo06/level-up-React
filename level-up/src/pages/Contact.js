@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Breadcrumbs from '../components/Breadcrumbs';
 import ScrollToTop from '../components/ScrollToTop';
 import { MailIcon, PhoneIcon, ClockIcon } from '../components/FeatureIcons';
 import Toast from '../components/Toast';
-import axios from 'axios';
+import axiosInstance from '../config/axiosConfig';
 
 function Contact() {
-  const navigate = useNavigate();
-  
   // 1. Estados para cada campo del formulario
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -22,31 +19,13 @@ function Contact() {
   const [toastMessage, setToastMessage] = useState('');
   const [toastType, setToastType] = useState('success'); // 'success' o 'error'
   
-  // Estado para verificar autenticación
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userEmail, setUserEmail] = useState('');
-  
-  // Verificar si el usuario está logueado al cargar el componente
+  // Verificar si hay un usuario logueado al cargar (para pre-llenar el email)
   useEffect(() => {
     const loggedUserEmail = localStorage.getItem('UsuarioLogeado');
-    
-    if (!loggedUserEmail) {
-      // Usuario no logueado - mostrar mensaje y redirigir
-      setToastMessage('Debes iniciar sesión para enviar un mensaje de contacto.');
-      setToastType('warning');
-      setShowToast(true);
-      
-      // Redirigir al login después de 3 segundos
-      setTimeout(() => {
-        navigate('/iniciarsesion');
-      }, 5000);
-    } else {
-      // Usuario autenticado
-      setIsAuthenticated(true);
-      setUserEmail(loggedUserEmail);
+    if (loggedUserEmail) {
+      setEmail(loggedUserEmail); // Pre-llenar el campo email
     }
-  }, [navigate]);
-  
+  }, []);
 
   // 3. Validación mejorada
   const validateForm = () => {
@@ -80,25 +59,13 @@ function Contact() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Verificar autenticación antes de enviar
-    if (!isAuthenticated || !userEmail) {
-      setToastMessage('Debes iniciar sesión para enviar un mensaje.');
-      setToastType('error');
-      setShowToast(true);
-      setTimeout(() => navigate('/login'), 2000);
-      return;
-    }
-
     if (!validateForm()) {
       return;
     }
 
     try {
-      // Construir la URL con el parámetro userEmail
-      const url = `http://localhost:8080/api/contact-messages?userEmail=${encodeURIComponent(userEmail)}`;
-      
-      // Llamar al backend de Spring Boot
-      const response = await axios.post(url, {
+      // Llamar al backend de Spring Boot (el token JWT se envía automáticamente)
+      const response = await axiosInstance.post('/api/contact-messages', {
         name: name,
         email: email,      
         subject: subject,
@@ -138,6 +105,14 @@ function Contact() {
 
   return (
     <div className="container my-5">
+      <style>{`
+        .contact-input::placeholder,
+        .contact-textarea::placeholder {
+          color: #9ca3af !important;
+          opacity: 1 !important;
+        }
+      `}</style>
+      
       <Breadcrumbs items={[{ label: 'Contacto', path: '/contacto' }]} />
 
       {/* Toast Component */}
@@ -148,37 +123,8 @@ function Contact() {
         onClose={() => setShowToast(false)}
       />
 
-      {/* Mostrar contenido solo si está autenticado */}
-      {!isAuthenticated ? (
-        <motion.div 
-          className="row"
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          <div className="col-lg-6 offset-lg-3">
-            <div className="card bg-dark border-warning text-center p-5">
-              <div className="text-warning mb-3">
-                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <line x1="12" y1="8" x2="12" y2="12"></line>
-                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                </svg>
-              </div>
-              <h3 className="text-white mb-3">Autenticación Requerida</h3>
-              <p className="text-secondary mb-4">
-                Debes iniciar sesión para poder enviar un mensaje de contacto.
-              </p>
-              <p className="text-secondary small">
-                Serás redirigido al inicio de sesión en unos segundos...
-              </p>
-            </div>
-          </div>
-        </motion.div>
-      ) : (
-        <>
-          {/* Hero con animación */}
-          <motion.div 
+      {/* Hero con animación */}
+      <motion.div 
         className="row mb-5"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -214,7 +160,7 @@ function Contact() {
                   </label>
                   <input
                     type="text"
-                    className={`form-control bg-dark text-white border-secondary ${errors.name ? 'is-invalid' : ''}`}
+                    className={`form-control bg-dark text-white border-secondary contact-input ${errors.name ? 'is-invalid' : ''}`}
                     id="name"
                     placeholder="Ej: Juan Pérez"
                     value={name}
@@ -234,7 +180,7 @@ function Contact() {
                   </label>
                   <input
                     type="email"
-                    className={`form-control bg-dark text-white border-secondary ${errors.email ? 'is-invalid' : ''}`}
+                    className={`form-control bg-dark text-white border-secondary contact-input ${errors.email ? 'is-invalid' : ''}`}
                     id="email"
                     placeholder="tu@email.com"
                     value={email}
@@ -254,7 +200,7 @@ function Contact() {
                   </label>
                   <input
                     type="text"
-                    className={`form-control bg-dark text-white border-secondary ${errors.subject ? 'is-invalid' : ''}`}
+                    className={`form-control bg-dark text-white border-secondary contact-input ${errors.subject ? 'is-invalid' : ''}`}
                     id="subject"
                     placeholder="Asunto"
                     value={subject}
@@ -272,7 +218,7 @@ function Contact() {
                     Mensaje
                   </label>
                   <textarea 
-                    className={`form-control bg-dark text-white border-secondary ${errors.message ? 'is-invalid' : ''}`}
+                    className={`form-control bg-dark text-white border-secondary contact-textarea ${errors.message ? 'is-invalid' : ''}`}
                     id="message"
                     rows="5"
                     placeholder="Escribe tu mensaje aquí..."
@@ -333,8 +279,6 @@ function Contact() {
           </motion.div>
         </div>
       </motion.div>
-      </>
-      )}
 
       <ScrollToTop />
     </div>

@@ -2,74 +2,54 @@ import React, { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useCart } from '../context/CartContext';
+import axiosInstance from '../config/axiosConfig';
 
 function PaymentSuccess() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { cartItems } = useCart();
+  const { clearCart } = useCart();
+  const [orderDetails, setOrderDetails] = React.useState(null); // Estado para los detalles de la orden
 
   const buyOrder = searchParams.get('buyOrder');
   const amount = searchParams.get('amount');
   const authCode = searchParams.get('authCode');
-  // Preparar datos de visualización (venta) y fallback
-  const fallbackCartKey = localStorage.getItem('UsuarioLogeado')
-    ? `carrito_${localStorage.getItem('UsuarioLogeado')}`
-    : 'carrito_invitado';
-  const cartFromStorageForDisplay = JSON.parse(localStorage.getItem(fallbackCartKey) || '[]');
-  const ventaSource = Array.isArray(cartItems) && cartItems.length ? cartItems : cartFromStorageForDisplay;
-  const venta = (ventaSource || []).map(item => ({
-    titulo: item.titulo,
-    cantidad: typeof item.cantidad !== 'undefined' ? item.cantidad : 1,
-    precio: item.precio || null
-  }));
-
-  // Intentar obtener el pedido ya guardado (por buyOrder) para mostrar exactamente lo que se registró
-  const pedidosGuardados = JSON.parse(localStorage.getItem('pedidos') || '[]');
-  const pedidoGuardado = buyOrder ? pedidosGuardados.find(p => String(p.ordenCompra) === String(buyOrder)) : null;
-  const displayVenta = pedidoGuardado && Array.isArray(pedidoGuardado.venta) && pedidoGuardado.venta.length ? pedidoGuardado.venta : venta;
 
   useEffect(() => {
     // Limpiar el carrito después de un pago exitoso y actualizar estado de orden
     if (buyOrder && amount) {
       // Obtener el orderId que guardamos antes de redirigir a Transbank
       const pendingOrderId = localStorage.getItem('pendingOrderId');
+      const purchasedProducts = JSON.parse(localStorage.getItem('purchasedProducts') || '[]');
       
       if (pendingOrderId) {
-        // Actualizar el estado de la orden en Spring Boot a PAID
-        fetch(`http://localhost:8080/purchase-orders/${pendingOrderId}/status?status=PAID`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          }
-        })
-        .then(response => response.json())
-        .then(data => {
-          console.log('✅ Estado de orden actualizado:', data);
-          // Limpiar el orderId pendiente
+        // Actualizar el estado de la orden a PAID
+        axiosInstance.patch(`/purchase-orders/${pendingOrderId}/status?status=PAID`)
+        .then(response => {
+          console.log('✅ Estado de orden actualizado a PAID');
           localStorage.removeItem('pendingOrderId');
+          localStorage.removeItem('purchasedProducts');
+          
+          // Ahora sí limpiar el carrito
+          clearCart();
         })
         .catch(error => {
-          console.error('❌ Error al actualizar estado de orden:', error);
+          console.error('❌ Error al procesar orden:', error);
         });
       }
       
-      // Guardamos el pedido en localStorage para historial incluyendo los productos (tomamos `venta` ya calculada)
-      const pedidos = JSON.parse(localStorage.getItem('pedidos') || '[]');
-      pedidos.push({
-        ordenCompra: buyOrder,
-        orderId: pendingOrderId,
-        monto: amount,
-        venta: venta,
-        codigoAutorizacion: authCode,
-        fecha: new Date().toLocaleString('es-CL'),
-        estado: 'Aprobado'
-      });
-      localStorage.setItem('pedidos', JSON.stringify(pedidos));
-
-      // Limpiar el carrito sin confirmación (dejar vacío para el usuario)
-      localStorage.setItem(fallbackCartKey, '[]');
+      // Mostrar los productos que fueron comprados (desde localStorage)
+      if (purchasedProducts.length > 0) {
+        setOrderDetails({
+          items: purchasedProducts.map(item => ({
+            productTitle: item.itemTitle,
+            quantity: item.cantidad,
+            unitPrice: item.itemPrice
+          }))
+        });
+      }
     }
-  }, [buyOrder, amount, authCode, cartItems, fallbackCartKey, venta]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [buyOrder, amount, authCode]);
 
   return (
     <div className="container my-5">
@@ -108,17 +88,16 @@ function PaymentSuccess() {
                   <div className="col-12 mb-3">
                     <small className="text-secondary">Productos Comprados</small>
                     <div className="text-white mb-0 fw-bold">
-                      {displayVenta && displayVenta.length ? (
+                      {orderDetails && orderDetails.items && orderDetails.items.length > 0 ? (
                         <ul className="list-unstyled mb-0">
-                          {displayVenta.map((p, i) => (
+                          {orderDetails.items.map((item, i) => (
                             <li key={i}>
-                              {p.titulo}
-                              {p.cantidad && p.cantidad > 1 ? ` x${p.cantidad}` : ''}
+                              {item.productTitle} x{item.quantity} - ${item.unitPrice.toLocaleString('es-CL')} CLP
                             </li>
                           ))}
                         </ul>
                       ) : (
-                        <span className="text-secondary">No hay productos registrados</span>
+                        <span className="text-secondary">Cargando productos...</span>
                       )}
                     </div>
                   </div>

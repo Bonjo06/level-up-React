@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import './Login.css';
-import axios from 'axios';
+import axiosInstance from '../config/axiosConfig';
 import Toast from '../components/Toast';
 
 function Login() {
@@ -43,24 +43,31 @@ function Login() {
 
     try {
       // Llamar al backend de Spring Boot
-      const response = await axios.post('http://localhost:8080/api/auth/login', {
+      const response = await axiosInstance.post('/api/auth/login', {
         email: email,
         password: password
       });
 
-      // Guardar información del usuario en localStorage
-      localStorage.setItem('UsuarioLogeado', email);
-      localStorage.setItem('UsuarioNombre', response.data.user.name);
-      
-      // Mostrar toast de éxito
-      setToastMessage('¡Sesión iniciada correctamente!');
-      setToastType('success');
-      setShowToast(true);
-      
-      // Redirigir después de 1 segundo
-      setTimeout(() => {
-        navigate('/');
-      }, 1000);
+      console.log('Respuesta del servidor:', response.data);
+
+      if (response.data.success) {
+        // Guardar el token JWT
+        localStorage.setItem('authToken', response.data.token);
+        
+        // Guardar información del usuario en localStorage
+        localStorage.setItem('UsuarioLogeado', response.data.user.email);
+        localStorage.setItem('UsuarioNombre', response.data.user.name);
+        
+        // Mostrar toast de éxito
+        setToastMessage(`¡Bienvenido ${response.data.user.name}!`);
+        setToastType('success');
+        setShowToast(true);
+        
+        // Redirigir después de 1 segundo
+        setTimeout(() => {
+          navigate('/');
+        }, 1000);
+      }
       
     } catch (error) {
       console.error('Error al iniciar sesión:', error);

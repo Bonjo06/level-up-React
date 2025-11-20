@@ -83,7 +83,7 @@ function Cart() {
       const orderItems = cartItems.map(item => {
         console.log('🔍 Item:', item);
         return {
-          productId: item.id, // ID del producto en la tabla inventario
+          productId: item.itemId, // ID del producto en la tabla inventario
           productTitle: item.itemTitle,
           unitPrice: parseFloat(item.itemPrice),
           quantity: item.cantidad
@@ -147,8 +147,11 @@ function Cart() {
       if (data.success) {
         console.log('✅ Transacción creada:', data);
         
-        // Limpiar el carrito antes de redirigir
-        clearCart();
+        // NO limpiar el carrito aquí - se limpiará después del pago exitoso
+        // clearCart(); // COMENTADO - se limpia en PaymentSuccess.js
+        
+        // ⭐ GUARDAR los productos del carrito en localStorage antes de redirigir
+        localStorage.setItem('purchasedProducts', JSON.stringify(cartItems));
         
         // Crear un formulario oculto para redirigir a Transbank
         const form = document.createElement('form');

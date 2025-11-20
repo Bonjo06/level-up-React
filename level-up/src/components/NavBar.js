@@ -92,6 +92,7 @@ function Navbar() {
   // Función para manejar el "Cerrar Sesión"
   const handleLogout = () => {
     localStorage.removeItem('UsuarioLogeado');
+    localStorage.removeItem('authToken');
     setCurrentUser(null);
     navigate('/iniciarsesion', { state: { message: 'Sesión cerrada exitosamente' } });
   };

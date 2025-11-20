@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from '../config/axiosConfig';
 import './Login.css'; // Reutilizamos los estilos del video
 import Toast from '../components/Toast';
 
@@ -41,20 +41,31 @@ function Register() {
 
     try {
       // Llamar al backend de Spring Boot
-      await axios.post('http://localhost:8080/api/auth/register', {
+      const response = await axiosInstance.post('/api/auth/register', {
         name: name.trim(),
         email: email.trim(),
         password: password
       });
 
-      setToastMessage('¡Cuenta registrada exitosamente! Redirigiendo...');
-      setToastType('success');
-      setShowToast(true);
-      
-      // Redirigir después de 2 segundos
-      setTimeout(() => {
-        navigate('/iniciarsesion', { state: { message: 'Registro exitoso. Inicia sesión.' } });
-      }, 2000);
+      console.log('Respuesta del servidor:', response.data);
+
+      if (response.data.success) {
+        // Guardar el token JWT
+        localStorage.setItem('authToken', response.data.token);
+        
+        // Guardar información del usuario
+        localStorage.setItem('UsuarioLogeado', response.data.user.email);
+        localStorage.setItem('UsuarioNombre', response.data.user.name);
+
+        setToastMessage('¡Cuenta registrada exitosamente! Bienvenido.');
+        setToastType('success');
+        setShowToast(true);
+        
+        // Redirigir después de 1.5 segundos
+        setTimeout(() => {
+          navigate('/');
+        }, 1500);
+      }
       
     } catch (error) {
       console.error('Error al registrar:', error);

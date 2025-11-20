@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from '../config/axiosConfig';
 import './Login.css'; // Reutilizamos los estilos del video
 import Toast from '../components/Toast';
 
@@ -39,7 +39,7 @@ function PasswordReset() {
 
     try {
       // Llamar al backend de Spring Boot para resetear la contraseña
-      await axios.post('http://localhost:8080/api/auth/reset-password', {
+      await axiosInstance.post('/api/auth/reset-password', {
         email: email.trim(),
         newPassword: newPassword
       });
