@@ -67,8 +67,7 @@ function Login() {
         setTimeout(() => {
           navigate('/');
         }, 1000);
-      }
-      
+      } 
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
       
