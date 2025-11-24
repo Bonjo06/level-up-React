@@ -1,18 +1,31 @@
-import React, { useState } from 'react';
-
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Breadcrumbs from '../components/Breadcrumbs';
 import ScrollToTop from '../components/ScrollToTop';
+import { MailIcon, PhoneIcon, ClockIcon } from '../components/FeatureIcons';
+import Toast from '../components/Toast';
+import axiosInstance from '../config/axiosConfig';
 
 function Contact() {
   // 1. Estados para cada campo del formulario
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const [errors, setErrors] = useState({});
   
-  // 2. Usamos 'navigate' para redirigir después de enviar
+  // Estados para el Toast
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState('success'); // 'success' o 'error'
   
+  // Verificar si hay un usuario logueado al cargar (para pre-llenar el email)
+  useEffect(() => {
+    const loggedUserEmail = localStorage.getItem('UsuarioLogeado');
+    if (loggedUserEmail) {
+      setEmail(loggedUserEmail); // Pre-llenar el campo email
+    }
+  }, []);
 
   // 3. Validación mejorada
   const validateForm = () => {
@@ -27,6 +40,10 @@ function Contact() {
     } else if (!/\S+@\S+\.\S+/.test(email)) {
       newErrors.email = 'El correo no es válido';
     }
+
+    if (!subject.trim()) {
+      newErrors.subject = 'El asunto es requerido';
+    }
     
     if (!message.trim()) {
       newErrors.message = 'El mensaje es requerido';
@@ -39,36 +56,72 @@ function Contact() {
   };
 
   // 4. Función que se ejecuta al presionar "Enviar"
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validateForm()) {
       return;
     }
-    
-    // Guardar datos en localStorage
-    const contactData = {
-      name: name.trim(),
-      email: email.trim(),
-      message: message.trim(),
-      fecha: new Date().toLocaleString('es-CL')
-    };
 
-    const mensajes = JSON.parse(localStorage.getItem('contactSubmissions') || '[]');
-    mensajes.push(contactData);
-    localStorage.setItem('contactSubmissions', JSON.stringify(mensajes));
-    
-    alert('¡Gracias por tu mensaje! Nos contactaremos contigo dentro de la brevedad.');
+    try {
+      // Llamar al backend de Spring Boot (el token JWT se envía automáticamente)
+      const response = await axiosInstance.post('/api/contact-messages', {
+        name: name,
+        email: email,      
+        subject: subject,
+        message: message
+      });
 
-    setName('');
-    setEmail('');
-    setMessage('');
-    setErrors({});
+      console.log('Respuesta del servidor:', response); // Para debug
+      
+      // Si llegó aquí sin errores, el mensaje se envió correctamente
+      // Mostrar toast de éxito
+      setToastMessage('¡Mensaje enviado correctamente! Te responderemos pronto.');
+      setToastType('success');
+      setShowToast(true);
+      
+      // Limpiar el formulario
+      setName('');
+      setEmail('');
+      setSubject('');
+      setMessage('');
+      setErrors({});
+      
+    } catch (error) {
+      console.error('Error al enviar formulario:', error);
+      
+      // Mostrar toast de error
+      if (error.response) {
+        setToastMessage(error.response.data.message || 'Error al enviar el mensaje.');
+      } else if (error.request) {
+        setToastMessage('No se pudo conectar con el servidor. Verifica que el backend esté corriendo.');
+      } else {
+        setToastMessage('Error al enviar el mensaje. Intenta nuevamente.');
+      }
+      setToastType('error');
+      setShowToast(true);
+    }
   };
 
   return (
     <div className="container my-5">
+      <style>{`
+        .contact-input::placeholder,
+        .contact-textarea::placeholder {
+          color: #9ca3af !important;
+          opacity: 1 !important;
+        }
+      `}</style>
+      
       <Breadcrumbs items={[{ label: 'Contacto', path: '/contacto' }]} />
+
+      {/* Toast Component */}
+      <Toast 
+        show={showToast}
+        message={toastMessage}
+        type={toastType}
+        onClose={() => setShowToast(false)}
+      />
 
       {/* Hero con animación */}
       <motion.div 
@@ -107,7 +160,7 @@ function Contact() {
                   </label>
                   <input
                     type="text"
-                    className={`form-control bg-dark text-white border-secondary ${errors.name ? 'is-invalid' : ''}`}
+                    className={`form-control bg-dark text-white border-secondary contact-input ${errors.name ? 'is-invalid' : ''}`}
                     id="name"
                     placeholder="Ej: Juan Pérez"
                     value={name}
@@ -127,13 +180,33 @@ function Contact() {
                   </label>
                   <input
                     type="email"
-                    className={`form-control bg-dark text-white border-secondary ${errors.email ? 'is-invalid' : ''}`}
+                    className={`form-control bg-dark text-white border-secondary contact-input ${errors.email ? 'is-invalid' : ''}`}
                     id="email"
                     placeholder="tu@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
                   {errors.email && <div className="invalid-feedback">{errors.email}</div>}
+                </div>
+
+                {/* Asunto */}
+                <div className="mb-4">
+                  <label htmlFor="subject" className="form-label fw-semibold">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="me-2">
+                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                      <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                    Asunto
+                  </label>
+                  <input
+                    type="text"
+                    className={`form-control bg-dark text-white border-secondary contact-input ${errors.subject ? 'is-invalid' : ''}`}
+                    id="subject"
+                    placeholder="Asunto"
+                    value={subject}
+                    onChange={(e) => setSubject(e.target.value)}
+                  />
+                  {errors.subject && <div className="invalid-feedback">{errors.subject}</div>}
                 </div>
 
                 {/* Mensaje */}
@@ -144,8 +217,8 @@ function Contact() {
                     </svg>
                     Mensaje
                   </label>
-                  <textarea
-                    className={`form-control bg-dark text-white border-secondary ${errors.message ? 'is-invalid' : ''}`}
+                  <textarea 
+                    className={`form-control bg-dark text-white border-secondary contact-textarea ${errors.message ? 'is-invalid' : ''}`}
                     id="message"
                     rows="5"
                     placeholder="Escribe tu mensaje aquí..."
@@ -178,21 +251,27 @@ function Contact() {
           >
             <div className="col-md-4">
               <div className="card bg-dark border-secondary text-center p-3">
-                <div className="text-primary mb-2">📧</div>
+                <div className="text-primary mb-2 d-flex justify-content-center">
+                  <MailIcon size={36} color="#0d6efd" />
+                </div>
                 <small className="text-secondary">Email</small>
                 <p className="mb-0 text-white small">info@levelupgamer.cl</p>
               </div>
             </div>
             <div className="col-md-4">
               <div className="card bg-dark border-secondary text-center p-3">
-                <div className="text-primary mb-2">📞</div>
+                <div className="text-primary mb-2 d-flex justify-content-center">
+                  <PhoneIcon size={36} color="#198754" />
+                </div>
                 <small className="text-secondary">Teléfono</small>
                 <p className="mb-0 text-white small">+56 9 1234 5678</p>
               </div>
             </div>
             <div className="col-md-4">
               <div className="card bg-dark border-secondary text-center p-3">
-                <div className="text-primary mb-2">⏰</div>
+                <div className="text-primary mb-2 d-flex justify-content-center">
+                  <ClockIcon size={36} color="#ffc107" />
+                </div>
                 <small className="text-secondary">Horario</small>
                 <p className="mb-0 text-white small">Lun-Vie 9:00-18:00</p>
               </div>

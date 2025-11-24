@@ -180,3 +180,56 @@ h1, h2, h3 {
 main {
   flex-grow: 1;
 }
+
+/* ========================================
+   ESTILOS PARA CARRUSEL HORIZONTAL
+   ======================================== */
+
+/* Scrollbar personalizado para el carrusel */
+.overflow-auto::-webkit-scrollbar {
+  height: 8px;
+}
+
+.overflow-auto::-webkit-scrollbar-track {
+  background: #212529;
+  border-radius: 10px;
+}
+
+.overflow-auto::-webkit-scrollbar-thumb {
+  background: #6c757d;
+  border-radius: 10px;
+}
+
+.overflow-auto::-webkit-scrollbar-thumb:hover {
+  background: #9333EA;
+}
+
+/* Para Firefox */
+.overflow-auto {
+  scrollbar-width: thin;
+  scrollbar-color: #6c757d #212529;
+}
+
+/* Animación suave del scroll */
+.overflow-auto {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Ocultar scrollbar en dispositivos móviles pero mantener funcionalidad */
+@media (max-width: 768px) {
+  .overflow-auto::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Botones de navegación del carrusel */
+.btn-outline-secondary {
+  transition: all 0.3s ease;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #9333EA !important;
+  border-color: #9333EA !important;
+  transform: scale(1.1);
+}

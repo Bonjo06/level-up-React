@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import './Login.css';
-// Ya no importamos 'bg' de 'assets'
+import axiosInstance from '../config/axiosConfig';
+import Toast from '../components/Toast';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -9,12 +10,21 @@ function Login() {
   const navigate = useNavigate();
   const location = useLocation();
   const hasShownAlertRef = useRef(false);
+  
+  // Estados para el Toast
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState('success');
 
   useEffect(() => {
     const message = location.state?.message;
     if (message && !hasShownAlertRef.current) {
       hasShownAlertRef.current = true;
-      alert(message); 
+      // Usar toast en lugar de alert
+      setToastMessage(message);
+      setToastType('success');
+      setShowToast(true);
+      
       navigate(location.pathname, { replace: true, state: {} });
     }
     if (!message) {
@@ -22,18 +32,56 @@ function Login() {
     }
   }, [location, navigate]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email || !password) {
-      alert('Por favor completa el/los campos vacíos.');
+      setToastMessage('Por favor completa todos los campos.');
+      setToastType('warning');
+      setShowToast(true);
       return;
     }
-    const storedPassword = localStorage.getItem(email);
-    if (storedPassword && storedPassword === password) {
-      localStorage.setItem('UsuarioLogeado', email);
-      navigate('/', { state: { message: 'Sesión iniciada correctamente' } }); 
-    } else {
-      alert('Correo o clave inválidos.');
+
+    try {
+      // Llamar al backend de Spring Boot
+      const response = await axiosInstance.post('/api/auth/login', {
+        email: email,
+        password: password
+      });
+
+      console.log('Respuesta del servidor:', response.data);
+
+      if (response.data.success) {
+        // Guardar el token JWT
+        localStorage.setItem('authToken', response.data.token);
+        
+        // Guardar información del usuario en localStorage
+        localStorage.setItem('UsuarioLogeado', response.data.user.email);
+        localStorage.setItem('UsuarioNombre', response.data.user.name);
+        
+        // Mostrar toast de éxito
+        setToastMessage(`¡Bienvenido ${response.data.user.name}!`);
+        setToastType('success');
+        setShowToast(true);
+        
+        // Redirigir después de 1 segundo
+        setTimeout(() => {
+          navigate('/');
+        }, 1000);
+      } 
+    } catch (error) {
+      console.error('Error al iniciar sesión:', error);
+      
+      let errorMessage = 'Error al iniciar sesión. Intenta nuevamente.';
+      
+      if (error.response) {
+        errorMessage = error.response.data.message || 'Correo o contraseña inválidos.';
+      } else if (error.request) {
+        errorMessage = 'No se pudo conectar con el servidor. Verifica que el backend esté corriendo.';
+      }
+      
+      setToastMessage(errorMessage);
+      setToastType('error');
+      setShowToast(true);
     }
   };
 
@@ -42,6 +90,14 @@ function Login() {
     // Añadimos el style en línea para el 'backgroundImage' de fallback.
     // El navegador buscará esta imagen en la carpeta 'public'.
     <div className="login-page">
+      
+      {/* Toast Component */}
+      <Toast 
+        show={showToast}
+        message={toastMessage}
+        type={toastType}
+        onClose={() => setShowToast(false)}
+      />
       
       {/* El video de fondo */}
       <video 

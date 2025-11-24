@@ -1,4 +1,5 @@
 import React from "react";
+import { GamepadIcon } from './FeatureIcons';
 
 function Footer() {
   return (
@@ -7,7 +8,10 @@ function Footer() {
         <div className="row">
           {/* Columna 1: Nombre */}
           <div className="col-lg-4 col-md-6 mb-4 mb-lg-0">
-            <h5 className="text-primary fw-bold">🎮 Level-Up Gamer</h5>
+            <h5 className="text-primary fw-bold d-flex align-items-center">
+              <GamepadIcon size={28} color="#0d6efd" />
+              <span className="ms-2">Level-Up Gamer</span>
+            </h5>
             <p className="small">
               Tu destino gamer: consolas, periféricos y más.
             </p>

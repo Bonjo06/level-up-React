@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import axiosInstance from '../config/axiosConfig';
 import './Login.css'; // Reutilizamos los estilos del video
+import Toast from '../components/Toast';
 
 function Register() {
   const [name, setName] = useState('');
@@ -9,35 +11,87 @@ function Register() {
   const [confirmedPassword, setConfirmedPassword] = useState('');
   
   const navigate = useNavigate();
+  
+  // Estados para el Toast
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState('success');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!name || !email || !password || !confirmedPassword) {
-      alert('Completa todos los campos.');
+      setToastMessage('Completa todos los campos.');
+      setToastType('warning');
+      setShowToast(true);
       return;
     }
     if (password.length < 4 || password.length > 12) {
-      alert('La contraseña debe tener entre 4 y 12 caracteres.');
+      setToastMessage('La contraseña debe tener entre 4 y 12 caracteres.');
+      setToastType('warning');
+      setShowToast(true);
       return;
     }
     if (password !== confirmedPassword) {
-      alert('Las contraseñas no coinciden.');
+      setToastMessage('Las contraseñas no coinciden.');
+      setToastType('warning');
+      setShowToast(true);
       return;
     }
-    if (localStorage.getItem(email)) {
-      alert('Este correo ya se encuentra registrado.');
-      return;
+
+    try {
+      // Llamar al backend de Spring Boot
+      const response = await axiosInstance.post('/api/auth/register', {
+        name: name.trim(),
+        email: email.trim(),
+        password: password
+      });
+
+      console.log('Respuesta del servidor:', response.data);
+
+      if (response.data.success) {
+        // Guardar el token JWT
+        localStorage.setItem('authToken', response.data.token);
+        
+        // Guardar información del usuario
+        localStorage.setItem('UsuarioLogeado', response.data.user.email);
+        localStorage.setItem('UsuarioNombre', response.data.user.name);
+
+        setToastMessage('¡Cuenta registrada exitosamente! Bienvenido.');
+        setToastType('success');
+        setShowToast(true);
+        
+        // Redirigir después de 1.5 segundos
+        setTimeout(() => {
+          navigate('/');
+        }, 1500);
+      }
+      
+    } catch (error) {
+      console.error('Error al registrar:', error);
+      
+      let errorMessage = 'Error al registrar. Intenta nuevamente.';
+      
+      if (error.response) {
+        errorMessage = error.response.data.message || 'Error al registrar usuario.';
+      }
+      
+      setToastMessage(errorMessage);
+      setToastType('error');
+      setShowToast(true);
     }
-    
-    localStorage.setItem(email, password);
-    localStorage.setItem(`${email}_name`, name); // Guardamos el nombre asociado al email
-    alert('Su cuenta se ha registrado exitosamente.');
-    navigate('/iniciarsesion');
   };
 
   return (
     <div className="login-page">
+      
+      {/* Toast Component */}
+      <Toast 
+        show={showToast}
+        message={toastMessage}
+        type={toastType}
+        onClose={() => setShowToast(false)}
+      />
       
       {/* El video de fondo */}
       <video 

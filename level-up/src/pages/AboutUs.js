@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import LeafletMap from '../components/LeafletMap';
 import Breadcrumbs from '../components/Breadcrumbs';
 import ScrollToTop from '../components/ScrollToTop';
-import { GamepadIcon, LightbulbIcon, HandshakeIcon } from '../components/FeatureIcons';
+import { GamepadIcon, LightbulbIcon, HandshakeIcon, MapPinIcon } from '../components/FeatureIcons';
 
 function Feature({ icon, title, children, delay = 0 }) {
   return (
@@ -120,7 +120,10 @@ export default function AboutUs() {
       >
         <div className="col-lg-10 offset-lg-1">
           <div className="text-center mb-4">
-            <h3 className="text-white mb-2">📍 Encuéntranos</h3>
+            <div className="d-flex justify-content-center align-items-center mb-3">
+              <MapPinIcon size={48} color="#dc3545" />
+              <h3 className="text-white mb-0 ms-2">Encuéntranos</h3>
+            </div>
             <p className="text-secondary mb-4">
               Visítanos en Grajales 2171 Santiago, Chile. Estamos aquí para ayudarte con tus necesidades gamer.
             </p>
