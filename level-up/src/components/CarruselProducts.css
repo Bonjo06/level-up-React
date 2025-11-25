@@ -13,46 +13,45 @@
   opacity: 1;
 }
 
-/* --- ESTILOS DEL SLIDE (con fondo borroso) --- */
+/* --- ESTILOS SLIDE (con fondo borroso) --- */
 
 .custom-slide {
   position: relative;
   height: 450px;
   overflow: hidden;
-  /* El fondo ahora es la imagen borrosa, no un color */
 }
 
-/* 1. (NUEVO) Imagen de fondo borrosa */
+/* Imagen de fondo borrosa */
 .slide-image-background {
   position: absolute;
-  top: -20px; /* Expandimos para que el blur no deje bordes */
+  top: -20px; 
   left: -20px;
   width: calc(100% + 40px);
   height: calc(100% + 40px);
-  object-fit: cover; /* Rellena todo el espacio */
+  object-fit: cover; 
   z-index: 1;
-  filter: blur(20px) brightness(0.6); /* Borroso y oscuro */
+  filter: blur(20px) brightness(0.6); 
   transform: scale(1.1);
 }
 
-/* 2. (MODIFICADO) Imagen principal nítida */
+/* Imagen principal nítida */
 .slide-image-foreground {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain; /* Muestra el producto completo */
-  z-index: 2; /* Encima del fondo borroso */
+  object-fit: contain; 
+  z-index: 2; 
   transition: transform 0.4s ease;
 }
 
-/* 3. (MODIFICADO) El hover se aplica a la imagen nítida */
+/* El hover se aplica a la imagen nítida */
 .custom-slide:hover .slide-image-foreground {
   transform: scale(1.03);
 }
 
-/* 4. Gradiente SOBRE la imagen de fondo (z-index: 3) */
+/* Gradiente SOBRE la imagen de fondo  */
 .slide-overlay-gradient {
   position: absolute;
   bottom: 0;
@@ -64,17 +63,17 @@
     rgba(0, 0, 0, 0.9) 10%,
     rgba(0, 0, 0, 0) 100%
   );
-  z-index: 3; /* Encima de la imagen nítida */
+  z-index: 3; 
 }
 
-/* 5. Contenido SOBRE todo lo demás (z-index: 4) */
+/* Contenido SOBRE todo lo demás  */
 .slide-content-wrapper {
   position: absolute;
   bottom: 0;
   left: 0;
   width: 100%;
   padding: 2rem;
-  z-index: 4; /* Encima de todo */
+  z-index: 4; 
   color: #ffffff;
   display: flex;
   justify-content: space-between;
@@ -132,7 +131,7 @@
   }
 }
 
-/* --- Estilos para las flechas (sin cambios) --- */
+/* --- Estilos para las flechas --- */
 .swiper-button-next,
 .swiper-button-prev {
   color: #ffffff;

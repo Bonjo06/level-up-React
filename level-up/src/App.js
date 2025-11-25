@@ -1,11 +1,11 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-// 1. Importamos los componentes de Layout
+
 import Navbar from './components/NavBar';
 import Footer from './components/Footer';
 
-// 2. Importamos las páginas
+
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -20,10 +20,9 @@ import PaymentError from './pages/PaymentError';
 function App() {
   return (
     <Router>
-      {/* 3. El Navbar va ANTES de las rutas */}
+      {/*Navbar*/}
       <Navbar /> 
-      
-      {/* 4. Usamos <main> para el contenido principal */}
+      {/* Rutas de la aplicación */}
       <main>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -36,11 +35,9 @@ function App() {
           <Route path="/payment/success" element={<PaymentSuccess />} />
           <Route path="/payment/failed" element={<PaymentFailed />} />
           <Route path="/payment/error" element={<PaymentError />} />
-          {/* Tus otras rutas (productos, contacto) irían aquí */}
         </Routes>
       </main>
-
-      {/* 5. El Footer va DESPUÉS de las rutas */}
+      {/* Footer */}
       <Footer />
     </Router>
   );

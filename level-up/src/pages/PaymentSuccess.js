@@ -8,7 +8,7 @@ function PaymentSuccess() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { clearCart } = useCart();
-  const [orderDetails, setOrderDetails] = React.useState(null); // Estado para los detalles de la orden
+  const [orderDetails, setOrderDetails] = React.useState(null); 
 
   const buyOrder = searchParams.get('buyOrder');
   const amount = searchParams.get('amount');
@@ -17,7 +17,7 @@ function PaymentSuccess() {
   useEffect(() => {
     // Limpiar el carrito después de un pago exitoso y actualizar estado de orden
     if (buyOrder && amount) {
-      // Obtener el orderId que guardamos antes de redirigir a Transbank
+      // Obtener el orderId desde localStorage
       const pendingOrderId = localStorage.getItem('pendingOrderId');
       const purchasedProducts = JSON.parse(localStorage.getItem('purchasedProducts') || '[]');
       
@@ -29,7 +29,7 @@ function PaymentSuccess() {
           localStorage.removeItem('pendingOrderId');
           localStorage.removeItem('purchasedProducts');
           
-          // Ahora sí limpiar el carrito
+          // limpiar el carrito
           clearCart();
         })
         .catch(error => {
@@ -37,7 +37,7 @@ function PaymentSuccess() {
         });
       }
       
-      // Mostrar los productos que fueron comprados (desde localStorage)
+      // Mostrar los productos que fueron comprados 
       if (purchasedProducts.length > 0) {
         setOrderDetails({
           items: purchasedProducts.map(item => ({
@@ -48,7 +48,6 @@ function PaymentSuccess() {
         });
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [buyOrder, amount, authCode]);
 
   return (
@@ -132,14 +131,6 @@ function PaymentSuccess() {
                 >
                   Volver al inicio
                 </motion.button>
-
-                {/* boton para cuando tenga historial de pedidos si es q lo hago */}
-                {/* 
-                  className="btn btn-outline-secondary"
-                  onClick={() => navigate('/mis-pedidos')}
-                >
-                  Ver mi historial de pedidos
-                </button>*/}
               </div>
             </div>
           </div>

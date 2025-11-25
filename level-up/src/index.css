@@ -168,22 +168,19 @@ h1, h2, h3 {
   margin-bottom: 1rem; 
 }
 
-/* Hacemos que la app ocupe al menos toda la pantalla */
+
 #root {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 }
 
-/* Hacemos que el contenido principal 'main' crezca 
-   para empujar el footer hacia abajo */
+
 main {
   flex-grow: 1;
 }
 
-/* ========================================
-   ESTILOS PARA CARRUSEL HORIZONTAL
-   ======================================== */
+
 
 /* Scrollbar personalizado para el carrusel */
 .overflow-auto::-webkit-scrollbar {

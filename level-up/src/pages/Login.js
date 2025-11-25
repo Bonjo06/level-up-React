@@ -86,11 +86,8 @@ function Login() {
   };
 
   return (
-    // --- MODIFICACIÓN AQUÍ ---
-    // Añadimos el style en línea para el 'backgroundImage' de fallback.
-    // El navegador buscará esta imagen en la carpeta 'public'.
     <div className="login-page">
-      
+
       {/* Toast Component */}
       <Toast 
         show={showToast}

@@ -3,14 +3,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 function Toast({ show, message, type, onClose, duration = 5000 }) {
   
-  // Auto-ocultar después del tiempo especificado
+  // Auto-ocultar 
   useEffect(() => {
     if (show) {
       const timer = setTimeout(() => {
         onClose();
       }, duration);
       
-      // Limpiar el timer si el componente se desmonta o show cambia
       return () => clearTimeout(timer);
     }
   }, [show, duration, onClose]);

@@ -77,7 +77,7 @@ function Cart() {
     setIsProcessing(true);
 
     try {
-      // PASO 1: Crear la orden en la base de datos
+      // Crear la orden en la base de datos
       console.log('📝 Creando orden en la base de datos...');
       console.log('📋 Items en el carrito:', cartItems);
       
@@ -85,7 +85,7 @@ function Cart() {
       const orderItems = cartItems.map(item => {
         console.log('🔍 Item:', item);
         return {
-          productId: item.itemId, // ID del producto en la tabla inventario
+          productId: item.itemId, 
           productTitle: item.itemTitle,
           unitPrice: parseFloat(item.itemPrice),
           quantity: item.cantidad
@@ -96,7 +96,7 @@ function Cart() {
       const orderData = {
         userEmail: userEmail,
         total: parseFloat(total),
-        shippingAddress: "Dirección de envío", // Puedes agregar un campo para esto después
+        shippingAddress: "Dirección de envío", 
         items: orderItems
       };
       
@@ -115,10 +115,10 @@ function Cart() {
       // Guardar el orderId en localStorage para usarlo después
       localStorage.setItem('pendingOrderId', orderResult.orderId);
       
-      // PASO 2: Crear la transacción de pago con Transbank
+      // Crear la transacción de pago con Transbank
       console.log('💳 Iniciando transacción con Transbank...');
       
-      const buyOrder = orderResult.orderNumber; // Usar el número de orden generado
+      const buyOrder = orderResult.orderNumber; 
       
       const paymentData = {
         amount: Math.round(total),
@@ -129,7 +129,6 @@ function Cart() {
       console.log('📦 Datos de pago:', paymentData);
 
       // Llamar al backend de Transbank
-      // Llamar al backend de Transbank (servicio de pago). Usamos PAYMENT_BASE_URL centralizado.
       const paymentResp = await fetch(`${PAYMENT_BASE_URL}/api/payment/create`, {
         method: 'POST',
         headers: {
@@ -143,13 +142,10 @@ function Cart() {
       if (data.success) {
         console.log('✅ Transacción creada:', data);
         
-        // NO limpiar el carrito aquí - se limpiará después del pago exitoso
-        // clearCart(); // COMENTADO - se limpia en PaymentSuccess.js
         
-        // ⭐ GUARDAR los productos del carrito en localStorage antes de redirigir
+        // GUARDAR los productos del carrito en localStorage antes de redirigir
         localStorage.setItem('purchasedProducts', JSON.stringify(cartItems));
         
-        // Crear un formulario oculto para redirigir a Transbank
         const form = document.createElement('form');
         form.method = 'POST';
         form.action = data.url;
@@ -180,7 +176,6 @@ function Cart() {
   return (
     <div className="container my-5">
       
-      {/* Toast Component */}
       <Toast 
         show={showToast}
         message={toastMessage}
@@ -188,11 +183,9 @@ function Cart() {
         onClose={() => setShowToast(false)}
       />
       
-      {/* Modal de Confirmación Animado */}
       <AnimatePresence>
         {showConfirmModal && (
           <>
-            {/* Backdrop semi-transparente */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -207,7 +200,6 @@ function Cart() {
               onClick={cancelClearCart}
             />
             
-            {/* Modal */}
             <motion.div
               initial={{ opacity: 0, scale: 0.8, y: -50 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}

@@ -29,8 +29,6 @@ axiosInstance.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401 || error.response?.status === 403) {
       // Evitar redirección automática para endpoints de autenticación
-      // (por ejemplo, POST /api/auth/login) — queremos que el componente
-      // pueda manejar el error y mostrar un toast en lugar de recargar.
       const requestUrl = error.config?.url || '';
       const isAuthEndpoint = requestUrl.includes('/api/auth');
 
@@ -39,7 +37,6 @@ axiosInstance.interceptors.response.use(
       localStorage.removeItem('UsuarioLogeado');
 
       if (!isAuthEndpoint) {
-        // Solo redirigimos automáticamente cuando NO es un endpoint de auth
         window.location.href = '/iniciarsesion';
       }
     }

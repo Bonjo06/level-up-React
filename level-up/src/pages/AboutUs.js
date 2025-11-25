@@ -30,10 +30,7 @@ function Feature({ icon, title, children, delay = 0 }) {
 export default function AboutUs() {
   return (
     <div className="container my-5">
-      {/* Breadcrumbs */}
       <Breadcrumbs items={[{ label: 'Sobre nosotros', path: '/acerca-de' }]} />
-
-      {/* Hero - Centrado y con mejor espaciado */}
       <motion.div 
         className="row mb-5"
         initial={{ opacity: 0, y: -20 }}
@@ -50,7 +47,6 @@ export default function AboutUs() {
         </div>
       </motion.div>
 
-      {/* Features - Mejor espaciado */}
       <div className="row mb-5 g-3">
         <div className="col-lg-10 offset-lg-1">
           <div className="row g-3">
@@ -67,7 +63,6 @@ export default function AboutUs() {
         </div>
       </div>
 
-      {/* Team - Centrado */}
       <motion.div 
         className="row mb-5"
         initial={{ opacity: 0 }}
@@ -82,7 +77,7 @@ export default function AboutUs() {
               Un grupo pequeño y apasionado que trabaja para ofrecer la mejor experiencia gamer.
             </p>
           </div>
-          <div className="row justify-content-center">
+          <div className="row justify-content-center g-3">
             <div className="col-md-6 col-lg-5">
               <div className="card bg-dark border-secondary text-white p-3">
                 <div className="d-flex align-items-center">
@@ -103,6 +98,26 @@ export default function AboutUs() {
                     <h6 className="mb-0">Benjamín Mella</h6>
                     <small className="text-secondary">Fundador</small>
                   </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="col-md-6 col-lg-5">
+              <div className="card bg-dark border-secondary text-white p-3">
+                <div className="d-flex align-items-center">
+                  <div style={{
+                    width: 72,
+                    height: 72,
+                    borderRadius: '50%',
+                    background: '#dc3545',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#fff',
+                    fontWeight: '700',
+                    fontSize: '1.2rem',
+                    marginRight: 12,
+                  }}>BS</div>
                   <div>
                     <h6 className="mb-0">Bryan Saavedra</h6>
                     <small className="text-secondary">Co-Fundador</small>
@@ -114,7 +129,6 @@ export default function AboutUs() {
         </div>
       </motion.div>
 
-      {/* Location Map - Centrado con título */}
       <motion.div 
         className="row"
         initial={{ opacity: 0 }}
@@ -142,7 +156,6 @@ export default function AboutUs() {
         </div>
       </motion.div>
 
-      {/* Botón Scroll to Top */}
       <ScrollToTop />
     </div>
   );

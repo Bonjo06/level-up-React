@@ -1,6 +1,3 @@
-// ============================================
-// SERVIDOR BACKEND PARA LEVEL-UP GAMER
-// ============================================
 // Este servidor maneja las transacciones con Transbank WebPay Plus
 
 require('dotenv').config(); // Carga las variables de entorno del archivo .env
@@ -11,14 +8,12 @@ const { WebpayPlus } = require('transbank-sdk'); // SDK oficial de Transbank
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// ============================================
+
 // CONFIGURACIÓN DE TRANSBANK
-// ============================================
-// Configuramos Transbank con las credenciales del ambiente de integración (pruebas)
 let transaction;
 
 if (process.env.TRANSBANK_ENV === 'integration') {
-  // Ambiente de pruebas - usa credenciales públicas de Transbank
+  // Ambiente de pruebas
   const { Options, IntegrationApiKeys, Environment, IntegrationCommerceCodes } = require('transbank-sdk');
   
   transaction = new WebpayPlus.Transaction(
@@ -37,27 +32,20 @@ if (process.env.TRANSBANK_ENV === 'integration') {
   console.log('✅ Transbank configurado en modo PRODUCCIÓN');
 }
 
-// ============================================
-// MIDDLEWARES
-// ============================================
 // Permiten procesar datos JSON y habilitar CORS
-app.use(express.json()); // Para leer el body de las peticiones en formato JSON
-app.use(express.urlencoded({ extended: true })); // Para procesar formularios
+app.use(express.json()); 
+app.use(express.urlencoded({ extended: true })); 
 app.use(cors({
-  origin: process.env.FRONTEND_URL, // Solo permite peticiones desde tu React app
+  origin: process.env.FRONTEND_URL, 
   credentials: true
 }));
 
-// ============================================
-// ALMACENAMIENTO TEMPORAL DE TRANSACCIONES
-// ============================================
-// En producción, esto debería estar en una base de datos (MongoDB, PostgreSQL, etc.)
-// Por ahora usamos memoria del servidor (se borra al reiniciar)
+
+
 const transacciones = new Map();
 
-// ============================================
-// RUTA 1: CREAR TRANSACCIÓN
-// ============================================
+
+// CREAR TRANSACCIÓN
 // Esta ruta recibe el carrito desde React y crea una transacción en Transbank
 app.post('/api/payment/create', async (req, res) => {
   try {
@@ -69,7 +57,7 @@ app.post('/api/payment/create', async (req, res) => {
       sessionId
     });
 
-    // Validaciones básicas
+    // Validaciones 
     if (!amount || amount <= 0) {
       return res.status(400).json({ 
         error: 'El monto debe ser mayor a 0' 
@@ -84,9 +72,9 @@ app.post('/api/payment/create', async (req, res) => {
 
     // Crear la transacción en Transbank
     // buyOrder: ID único de tu orden de compra
-    // sessionId: ID de la sesión del usuario (puede ser su email)
-    // amount: Monto total en PESOS CHILENOS (sin decimales)
-    // returnUrl: URL a la que Transbank redirigirá después del pago (debe ser el backend)
+    // sessionId: ID de la sesión del usuario 
+    // amount: Monto total en PESOS CHILENOS 
+    // returnUrl: URL a la que Transbank redirigirá después del pago 
     const response = await transaction.create(
       buyOrder,
       sessionId,
@@ -94,7 +82,7 @@ app.post('/api/payment/create', async (req, res) => {
       returnUrl || `http://34.201.202.181:${PORT}/api/payment/confirm`
     );
 
-    // Guardamos la información de la transacción para consultarla después
+    // Guardar la información de la transacción 
     transacciones.set(response.token, {
       buyOrder,
       sessionId,
@@ -106,7 +94,7 @@ app.post('/api/payment/create', async (req, res) => {
     console.log('Token:', response.token);
     console.log('URL:', response.url);
 
-    // Devolvemos la URL y token al frontend
+    
     // El frontend redirigirá al usuario a esta URL para pagar
     res.json({
       success: true,
@@ -123,14 +111,12 @@ app.post('/api/payment/create', async (req, res) => {
   }
 });
 
-// ============================================
-// RUTA 2: CONFIRMAR TRANSACCIÓN
-// ============================================
+// CONFIRMAR TRANSACCIÓN
 // Transbank redirige aquí después de que el usuario paga (o cancela)
-// Esta ruta valida el pago con Transbank
+// valida el pago con Transbank
 app.get('/api/payment/confirm', async (req, res) => {
   try {
-    const token_ws = req.query.token_ws; // Token que Transbank envía en la URL
+    const token_ws = req.query.token_ws; 
 
     if (!token_ws) {
       return res.redirect(`${process.env.FRONTEND_URL}/payment/error`);
@@ -148,7 +134,7 @@ app.get('/api/payment/confirm', async (req, res) => {
       authorizationCode: response.authorization_code
     });
 
-    // Obtener la información que guardamos antes
+    // Obtener la información de la transacción guardada
     const transaccionInfo = transacciones.get(token_ws);
 
     // Verificar si el pago fue exitoso
@@ -189,9 +175,8 @@ app.get('/api/payment/confirm', async (req, res) => {
   }
 });
 
-// ============================================
-// RUTA 3: CONSULTAR ESTADO DE TRANSACCIÓN
-// ============================================
+
+// CONSULTAR ESTADO DE TRANSACCIÓN
 // Permite consultar el estado de una transacción desde el frontend
 app.get('/api/payment/status/:token', async (req, res) => {
   try {
@@ -221,10 +206,9 @@ app.get('/api/payment/status/:token', async (req, res) => {
   }
 });
 
-// ============================================
-// RUTA DE HEALTH CHECK
-// ============================================
-// Para verificar que el servidor está funcionando
+
+
+// verificar que el servidor está funcionando
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
@@ -234,9 +218,8 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// ============================================
-// RUTA PARA VER TRANSACCIONES ACTIVAS (DEBUG)
-// ============================================
+
+// ver transacciones activas (debug)
 app.get('/api/transactions', (req, res) => {
   const activeTransactions = Array.from(transacciones.entries()).map(([token, data]) => ({
     token: token.substring(0, 20) + '...', // Ocultamos parte del token por seguridad
@@ -249,9 +232,7 @@ app.get('/api/transactions', (req, res) => {
   });
 });
 
-// ============================================
 // INICIAR SERVIDOR
-// ============================================
 app.listen(PORT, () => {
   console.log('');
   console.log('🚀 ============================================');
