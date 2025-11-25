@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { AlertCircleIcon } from '../components/FeatureIcons';
+import axiosInstance from '../config/axiosConfig';
 
 function PaymentFailed() {
   const [searchParams] = useSearchParams();
@@ -14,21 +15,15 @@ function PaymentFailed() {
     
     if (pendingOrderId) {
       // Actualizar el estado de la orden en Spring Boot a CANCELLED
-      fetch(`http://localhost:8080/purchase-orders/${pendingOrderId}/status?status=CANCELLED`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
+      (async () => {
+        try {
+          const resp = await axiosInstance.patch(`/purchase-orders/${pendingOrderId}/status?status=CANCELLED`);
+          console.log('✅ Orden cancelada:', resp.data);
+          localStorage.removeItem('pendingOrderId');
+        } catch (error) {
+          console.error('❌ Error al cancelar orden:', error);
         }
-      })
-      .then(response => response.json())
-      .then(data => {
-        console.log('✅ Orden cancelada:', data);
-        // Limpiar el orderId pendiente
-        localStorage.removeItem('pendingOrderId');
-      })
-      .catch(error => {
-        console.error('❌ Error al cancelar orden:', error);
-      });
+      })();
     }
   }, []);
 

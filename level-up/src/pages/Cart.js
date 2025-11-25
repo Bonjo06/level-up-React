@@ -5,6 +5,8 @@ import Breadcrumbs from '../components/Breadcrumbs';
 import ScrollToTop from '../components/ScrollToTop';
 import { ShoppingCartIcon } from '../components/FeatureIcons';
 import Toast from '../components/Toast';
+import axiosInstance from '../config/axiosConfig';
+import { PAYMENT_BASE_URL } from '../config/apiConfig';
 
 function Cart() {
 
@@ -100,16 +102,9 @@ function Cart() {
       
       console.log('📦 Datos de la orden a enviar:', orderData);
       
-      // Crear la orden en Spring Boot
-      const orderResponse = await fetch('http://localhost:8080/purchase-orders/create-from-cart', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(orderData)
-      });
-      
-      const orderResult = await orderResponse.json();
+      // Crear la orden en Spring Boot (usando axiosInstance con baseURL centralizada)
+      const orderResp = await axiosInstance.post('/purchase-orders/create-from-cart', orderData);
+      const orderResult = orderResp.data;
       
       if (!orderResult.success) {
         throw new Error(orderResult.message || 'Error al crear la orden');
@@ -134,7 +129,8 @@ function Cart() {
       console.log('📦 Datos de pago:', paymentData);
 
       // Llamar al backend de Transbank
-      const response = await fetch('http://localhost:5000/api/payment/create', {
+      // Llamar al backend de Transbank (servicio de pago). Usamos PAYMENT_BASE_URL centralizado.
+      const paymentResp = await fetch(`${PAYMENT_BASE_URL}/api/payment/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -142,7 +138,7 @@ function Cart() {
         body: JSON.stringify(paymentData)
       });
 
-      const data = await response.json();
+      const data = await paymentResp.json();
 
       if (data.success) {
         console.log('✅ Transacción creada:', data);

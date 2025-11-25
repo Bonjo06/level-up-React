@@ -1,8 +1,9 @@
 import axios from 'axios';
+import { API_BASE_URL } from './apiConfig';
 
-// Crear instancia de axios
+// Crear instancia de axios usando la URL centralizada
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:8080',
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json'
   }

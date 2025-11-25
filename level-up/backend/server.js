@@ -91,7 +91,7 @@ app.post('/api/payment/create', async (req, res) => {
       buyOrder,
       sessionId,
       amount,
-      returnUrl || `http://localhost:${PORT}/api/payment/confirm`
+      returnUrl || `http://34.201.202.181:${PORT}/api/payment/confirm`
     );
 
     // Guardamos la información de la transacción para consultarla después

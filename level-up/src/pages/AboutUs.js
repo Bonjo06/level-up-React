@@ -103,6 +103,10 @@ export default function AboutUs() {
                     <h6 className="mb-0">Benjamín Mella</h6>
                     <small className="text-secondary">Fundador</small>
                   </div>
+                  <div>
+                    <h6 className="mb-0">Bryan Saavedra</h6>
+                    <small className="text-secondary">Co-Fundador</small>
+                  </div>
                 </div>
               </div>
             </div>

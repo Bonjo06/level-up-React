@@ -16,7 +16,7 @@ import { useCart } from '../context/CartContext';
 
 import ScrollToTop from '../components/ScrollToTop';
 
-import axios from 'axios';
+import axiosInstance from '../config/axiosConfig';
 
 import Toast from '../components/Toast';
 
@@ -133,7 +133,7 @@ function Home() {
 
         setIsLoading(true);
 
-        const response = await axios.get('http://localhost:8080/api/inventario');
+        const response = await axiosInstance.get('/api/inventario');
 
         console.log('📦 Datos recibidos del backend:', response.data);
 
