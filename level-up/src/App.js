@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 
 
 import Navbar from './components/NavBar';
@@ -16,12 +16,20 @@ import AboutUs from './pages/AboutUs';
 import PaymentSuccess from './pages/PaymentSuccess';
 import PaymentFailed from './pages/PaymentFailed';
 import PaymentError from './pages/PaymentError';
+import Administration from './pages/Administration';
 
-function App() {
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import { initializeAdmin } from './utils/initializeAdmin';
+
+function AppContent() {
+  const location = useLocation();
+  const isAdminPage = location.pathname === '/administracion';
+
   return (
-    <Router>
-      {/*Navbar*/}
-      <Navbar /> 
+    <>
+      {!isAdminPage && <Navbar />}
+      
       {/* Rutas de la aplicación */}
       <main>
         <Routes>
@@ -35,11 +43,43 @@ function App() {
           <Route path="/payment/success" element={<PaymentSuccess />} />
           <Route path="/payment/failed" element={<PaymentFailed />} />
           <Route path="/payment/error" element={<PaymentError />} />
+          <Route 
+            path="/administracion" 
+            element={
+              <ProtectedRoute>
+                <Administration />
+              </ProtectedRoute>
+            } 
+          />
         </Routes>
       </main>
-      {/* Footer */}
-      <Footer />
-    </Router>
+      
+      {/* Mostrar Footer solo si NO está en la página de administración */}
+      {!isAdminPage && <Footer />}
+    </>
+  );
+}
+
+function App() {
+  useEffect(() => {
+    // Inicializar usuario administrador al cargar la aplicación
+    const setupAdmin = async () => {
+      try {
+        await initializeAdmin();
+      } catch (error) {
+        console.error('Error al inicializar administrador:', error);
+      }
+    };
+    
+    setupAdmin();
+  }, []);
+
+  return (
+    <AuthProvider>
+      <Router>
+        <AppContent />
+      </Router>
+    </AuthProvider>
   );
 }
 

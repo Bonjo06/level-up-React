@@ -1,0 +1,11 @@
+// Centralizar las direcciones base de los servicios API.
+
+export const API_BASE_URL = process.env.REACT_APP_API_URL || URL BACKEND
+export const PAYMENT_BASE_URL = process.env.REACT_APP_PAYMENT_URL || URL TRANSBANK
+
+const config = {
+  API_BASE_URL,
+  PAYMENT_BASE_URL,
+};
+
+export default config;

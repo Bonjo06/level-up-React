@@ -64,7 +64,7 @@ function Home() {
 
   const groupProductsByCategory = (productsList) => {
     return productsList.reduce((acc, product) => {
-      const category = product.itemCategory || 'Otros';
+      const category = product.itemCategory || 'Sin categoría';
 
       if (!acc[category]) {
         acc[category] = [];

@@ -75,11 +75,12 @@ app.post('/api/payment/create', async (req, res) => {
     // sessionId: ID de la sesión del usuario 
     // amount: Monto total en PESOS CHILENOS 
     // returnUrl: URL a la que Transbank redirigirá después del pago 
+    //returnUrl || `http://34.201.202.181:${PORT}/api/payment/confirm`
     const response = await transaction.create(
       buyOrder,
       sessionId,
       amount,
-      returnUrl || `http://34.201.202.181:${PORT}/api/payment/confirm`
+      returnUrl || `http://localhost:${PORT}/api/payment/confirm`
     );
 
     // Guardar la información de la transacción 

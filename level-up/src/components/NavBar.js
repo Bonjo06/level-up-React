@@ -29,25 +29,22 @@ function Navbar() {
   useEffect(() => {
     // Revisa si existe "UsuarioLogeado" en localStorage
     const userEmail = localStorage.getItem('UsuarioLogeado'); 
+    const userName = localStorage.getItem('UsuarioNombre');
+    
     if (userEmail) {
-      // Obtener usuarios registrados
-      const usuarios = JSON.parse(localStorage.getItem('usuarios') || '[]');
-      // Buscar el usuario por email
-      const usuario = usuarios.find(user => user.email === userEmail);
-      
-      setCurrentUser(usuario ? usuario.name : userEmail);
+      // Si existe el nombre guardado, usarlo; si no, usar el email
+      setCurrentUser(userName || userEmail);
     } else {
-      
       setCurrentUser(null);
     }
 
     // Listener para sincronizar entre pestañas
     const handleStorageChange = () => {
       const userEmail = localStorage.getItem('UsuarioLogeado');
+      const userName = localStorage.getItem('UsuarioNombre');
+      
       if (userEmail) {
-        const usuarios = JSON.parse(localStorage.getItem('usuarios') || '[]');
-        const usuario = usuarios.find(user => user.email === userEmail);
-        setCurrentUser(usuario ? usuario.name : userEmail);
+        setCurrentUser(userName || userEmail);
       } else {
         setCurrentUser(null);
       }
@@ -72,7 +69,7 @@ function Navbar() {
     ).slice(0, 5);
     setSearchResults(filtered);
     setShowResults(filtered.length > 0);
-  }, [searchQuery]);
+  }, [searchQuery, availableProducts]);
 
   // Cargar productos desde el backend para la búsqueda rápida
   useEffect(() => {
@@ -158,7 +155,7 @@ function Navbar() {
     >
       <div className="container">
         <Link className="nav-link" to="/">
-          <h3>Level-up Gamer</h3>
+          <h3>Level-Up Gamer</h3>
         </Link>
 
         <button
