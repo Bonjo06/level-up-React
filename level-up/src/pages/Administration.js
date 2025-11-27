@@ -58,9 +58,7 @@ function Administration() {
       } else if (response.data.content && Array.isArray(response.data.content)) {
         productsList = response.data.content;
       }
-      
-      console.log('📦 Productos cargados:', productsList);
-      console.log('📦 Primer producto (para verificar estructura):', productsList[0]);
+
       setProducts(productsList);
     } catch (error) {
       console.error('Error al cargar productos:', error);
@@ -78,7 +76,6 @@ function Administration() {
     try {
       const response = await axiosInstance.get('/users');
       
-      console.log('📊 Respuesta de usuarios:', response.data);
       
       // Extraer usuarios de la estructura de respuesta
       let usersData = [];
@@ -89,8 +86,7 @@ function Administration() {
       } else if (response.data.content) {
         usersData = response.data.content;
       }
-      
-      console.log('👥 Usuarios procesados:', usersData);
+
       setUsers(usersData);
     } catch (error) {
       console.error('❌ Error al cargar usuarios:', error);
@@ -171,8 +167,8 @@ function Administration() {
     try {
       // Verificar token antes de enviar
       const adminToken = localStorage.getItem('adminToken');
-      console.log('🔑 Token disponible:', !!adminToken);
-      console.log('🔑 Token (primeros 20 caracteres):', adminToken?.substring(0, 20));
+      console.log(' Token disponible:', !!adminToken);
+      console.log(' Token (primeros 20 caracteres):', adminToken?.substring(0, 20));
       
       // Mapear formData a la estructura del backend
       const productData = {
@@ -191,12 +187,11 @@ function Administration() {
           ...productData,
           itemId: productId
         };
-        console.log('📝 Actualizando producto:', productId, updateData);
+        // actualizar producto existente
         await axiosInstance.put(`/api/inventario/${productId}`, updateData);
         setToastMessage('Producto actualizado exitosamente');
       } else {
         // Crear nuevo producto
-        console.log('➕ Creando producto:', productData);
         await axiosInstance.post('/api/inventario', productData);
         setToastMessage('Producto creado exitosamente');
       }

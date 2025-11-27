@@ -50,7 +50,6 @@ function Login() {
         password: password
       });
 
-      console.log('Respuesta del servidor:', response.data);
 
       if (response.data.success) {
         // Guardar el token JWT

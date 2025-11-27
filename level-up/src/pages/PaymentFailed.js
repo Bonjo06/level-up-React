@@ -18,7 +18,6 @@ function PaymentFailed() {
       (async () => {
         try {
           const resp = await axiosInstance.patch(`/purchase-orders/${pendingOrderId}/status?status=CANCELLED`);
-          console.log('✅ Orden cancelada:', resp.data);
           localStorage.removeItem('pendingOrderId');
         } catch (error) {
           console.error('❌ Error al cancelar orden:', error);

@@ -78,12 +78,9 @@ function Cart() {
 
     try {
       // Crear la orden en la base de datos
-      console.log('📝 Creando orden en la base de datos...');
-      console.log('📋 Items en el carrito:', cartItems);
-      
+      console.log('Items en el carrito:', cartItems);
       // Preparar los items de la orden
       const orderItems = cartItems.map(item => {
-        console.log('🔍 Item:', item);
         return {
           productId: item.itemId, 
           productTitle: item.itemTitle,
@@ -100,7 +97,6 @@ function Cart() {
         items: orderItems
       };
       
-      console.log('📦 Datos de la orden a enviar:', orderData);
       
       // Crear la orden en Spring Boot (usando axiosInstance con baseURL centralizada)
       const orderResp = await axiosInstance.post('/purchase-orders/create-from-cart', orderData);
@@ -110,13 +106,13 @@ function Cart() {
         throw new Error(orderResult.message || 'Error al crear la orden');
       }
       
-      console.log('✅ Orden creada:', orderResult);
+
       
       // Guardar el orderId en localStorage para usarlo después
       localStorage.setItem('pendingOrderId', orderResult.orderId);
       
       // Crear la transacción de pago con Transbank
-      console.log('💳 Iniciando transacción con Transbank...');
+
       
       const buyOrder = orderResult.orderNumber; 
       
@@ -125,8 +121,6 @@ function Cart() {
         buyOrder: buyOrder,
         sessionId: userEmail
       };
-
-      console.log('📦 Datos de pago:', paymentData);
 
       // Llamar al backend de Transbank
       const paymentResp = await fetch(`${PAYMENT_BASE_URL}/api/payment/create`, {
@@ -140,8 +134,6 @@ function Cart() {
       const data = await paymentResp.json();
 
       if (data.success) {
-        console.log('✅ Transacción creada:', data);
-        
         
         // GUARDAR los productos del carrito en localStorage antes de redirigir
         localStorage.setItem('purchasedProducts', JSON.stringify(cartItems));
