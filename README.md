@@ -30,6 +30,7 @@ Level-up Gamer es una plataforma de comercio electrónico especializada en produ
 - **MySQL** - Base de datos
 - **JWT** - Autenticación
 - **Transbank SDK** - Procesamiento de pagos
+- [Repositorio Backend del proyecto](https://github.com/Bonjo06/backend-levelup.git)
 
 ## 📁 Estructura del Proyecto
 
