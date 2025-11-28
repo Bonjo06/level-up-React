@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-/**
- * ScrollToTop - Botón flotante para volver arriba
- */
+/* Botón flotante para volver arriba */
 export default function ScrollToTop() {
   const [isVisible, setIsVisible] = useState(false);
 

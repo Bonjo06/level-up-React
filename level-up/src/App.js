@@ -1,11 +1,11 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 
-// 1. Importamos los componentes de Layout
+
 import Navbar from './components/NavBar';
 import Footer from './components/Footer';
 
-// 2. Importamos las páginas
+
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -16,14 +16,21 @@ import AboutUs from './pages/AboutUs';
 import PaymentSuccess from './pages/PaymentSuccess';
 import PaymentFailed from './pages/PaymentFailed';
 import PaymentError from './pages/PaymentError';
+import Administration from './pages/Administration';
 
-function App() {
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import { initializeAdmin } from './utils/initializeAdmin';
+
+function AppContent() {
+  const location = useLocation();
+  const isAdminPage = location.pathname === '/administracion';
+
   return (
-    <Router>
-      {/* 3. El Navbar va ANTES de las rutas */}
-      <Navbar /> 
+    <>
+      {!isAdminPage && <Navbar />}
       
-      {/* 4. Usamos <main> para el contenido principal */}
+      {/* Rutas de la aplicación */}
       <main>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -36,13 +43,43 @@ function App() {
           <Route path="/payment/success" element={<PaymentSuccess />} />
           <Route path="/payment/failed" element={<PaymentFailed />} />
           <Route path="/payment/error" element={<PaymentError />} />
-          {/* Tus otras rutas (productos, contacto) irían aquí */}
+          <Route 
+            path="/administracion" 
+            element={
+              <ProtectedRoute>
+                <Administration />
+              </ProtectedRoute>
+            } 
+          />
         </Routes>
       </main>
+      
+      {/* Mostrar Footer solo si NO está en la página de administración */}
+      {!isAdminPage && <Footer />}
+    </>
+  );
+}
 
-      {/* 5. El Footer va DESPUÉS de las rutas */}
-      <Footer />
-    </Router>
+function App() {
+  useEffect(() => {
+    // Inicializar usuario administrador al cargar la aplicación
+    const setupAdmin = async () => {
+      try {
+        await initializeAdmin();
+      } catch (error) {
+        console.error('Error al inicializar administrador:', error);
+      }
+    };
+    
+    setupAdmin();
+  }, []);
+
+  return (
+    <AuthProvider>
+      <Router>
+        <AppContent />
+      </Router>
+    </AuthProvider>
   );
 }
 

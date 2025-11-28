@@ -5,6 +5,8 @@ import Breadcrumbs from '../components/Breadcrumbs';
 import ScrollToTop from '../components/ScrollToTop';
 import { ShoppingCartIcon } from '../components/FeatureIcons';
 import Toast from '../components/Toast';
+import axiosInstance from '../config/axiosConfig';
+import { PAYMENT_BASE_URL } from '../config/apiConfig';
 
 function Cart() {
 
@@ -75,7 +77,7 @@ function Cart() {
     setIsProcessing(true);
 
     try {
-      // PASO 1: Crear la orden en la base de datos
+      // Crear la orden en la base de datos
       console.log('📝 Creando orden en la base de datos...');
       console.log('📋 Items en el carrito:', cartItems);
       
@@ -83,7 +85,7 @@ function Cart() {
       const orderItems = cartItems.map(item => {
         console.log('🔍 Item:', item);
         return {
-          productId: item.itemId, // ID del producto en la tabla inventario
+          productId: item.itemId, 
           productTitle: item.itemTitle,
           unitPrice: parseFloat(item.itemPrice),
           quantity: item.cantidad
@@ -94,22 +96,15 @@ function Cart() {
       const orderData = {
         userEmail: userEmail,
         total: parseFloat(total),
-        shippingAddress: "Dirección de envío", // Puedes agregar un campo para esto después
+        shippingAddress: "Dirección de envío", 
         items: orderItems
       };
       
       console.log('📦 Datos de la orden a enviar:', orderData);
       
-      // Crear la orden en Spring Boot
-      const orderResponse = await fetch('http://localhost:8080/purchase-orders/create-from-cart', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(orderData)
-      });
-      
-      const orderResult = await orderResponse.json();
+      // Crear la orden en Spring Boot (usando axiosInstance con baseURL centralizada)
+      const orderResp = await axiosInstance.post('/purchase-orders/create-from-cart', orderData);
+      const orderResult = orderResp.data;
       
       if (!orderResult.success) {
         throw new Error(orderResult.message || 'Error al crear la orden');
@@ -120,10 +115,10 @@ function Cart() {
       // Guardar el orderId en localStorage para usarlo después
       localStorage.setItem('pendingOrderId', orderResult.orderId);
       
-      // PASO 2: Crear la transacción de pago con Transbank
+      // Crear la transacción de pago con Transbank
       console.log('💳 Iniciando transacción con Transbank...');
       
-      const buyOrder = orderResult.orderNumber; // Usar el número de orden generado
+      const buyOrder = orderResult.orderNumber; 
       
       const paymentData = {
         amount: Math.round(total),
@@ -134,7 +129,7 @@ function Cart() {
       console.log('📦 Datos de pago:', paymentData);
 
       // Llamar al backend de Transbank
-      const response = await fetch('http://localhost:5000/api/payment/create', {
+      const paymentResp = await fetch(`${PAYMENT_BASE_URL}/api/payment/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -142,18 +137,15 @@ function Cart() {
         body: JSON.stringify(paymentData)
       });
 
-      const data = await response.json();
+      const data = await paymentResp.json();
 
       if (data.success) {
         console.log('✅ Transacción creada:', data);
         
-        // NO limpiar el carrito aquí - se limpiará después del pago exitoso
-        // clearCart(); // COMENTADO - se limpia en PaymentSuccess.js
         
-        // ⭐ GUARDAR los productos del carrito en localStorage antes de redirigir
+        // GUARDAR los productos del carrito en localStorage antes de redirigir
         localStorage.setItem('purchasedProducts', JSON.stringify(cartItems));
         
-        // Crear un formulario oculto para redirigir a Transbank
         const form = document.createElement('form');
         form.method = 'POST';
         form.action = data.url;
@@ -184,7 +176,6 @@ function Cart() {
   return (
     <div className="container my-5">
       
-      {/* Toast Component */}
       <Toast 
         show={showToast}
         message={toastMessage}
@@ -192,11 +183,9 @@ function Cart() {
         onClose={() => setShowToast(false)}
       />
       
-      {/* Modal de Confirmación Animado */}
       <AnimatePresence>
         {showConfirmModal && (
           <>
-            {/* Backdrop semi-transparente */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -211,7 +200,6 @@ function Cart() {
               onClick={cancelClearCart}
             />
             
-            {/* Modal */}
             <motion.div
               initial={{ opacity: 0, scale: 0.8, y: -50 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}

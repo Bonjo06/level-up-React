@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import './Login.css';
 import axiosInstance from '../config/axiosConfig';
 import Toast from '../components/Toast';
+import { useAuth } from '../context/AuthContext';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -10,6 +11,7 @@ function Login() {
   const navigate = useNavigate();
   const location = useLocation();
   const hasShownAlertRef = useRef(false);
+  const { loginAsAdmin, setIsAuthenticated, setUser } = useAuth();
   
   // Estados para el Toast
   const [showToast, setShowToast] = useState(false);
@@ -42,7 +44,7 @@ function Login() {
     }
 
     try {
-      // Llamar al backend de Spring Boot
+      // Intentar login contra el backend primero
       const response = await axiosInstance.post('/api/auth/login', {
         email: email,
         password: password
@@ -57,6 +59,31 @@ function Login() {
         // Guardar información del usuario en localStorage
         localStorage.setItem('UsuarioLogeado', response.data.user.email);
         localStorage.setItem('UsuarioNombre', response.data.user.name);
+        
+        // Verificar si el usuario tiene rol ADMIN desde el backend
+        if (response.data.user.role === 'ADMIN') {
+          const adminData = {
+            email: response.data.user.email,
+            name: response.data.user.name,
+            role: 'admin'
+          };
+          
+          // Pasar el token JWT real al contexto
+          loginAsAdmin(adminData, response.data.token);
+          
+          setToastMessage('¡Bienvenido Administrador!');
+          setToastType('success');
+          setShowToast(true);
+          
+          setTimeout(() => {
+            navigate('/administracion');
+          }, 1000);
+          return;
+        }
+        
+        // Usuario normal
+        setIsAuthenticated(true);
+        setUser(response.data.user);
         
         // Mostrar toast de éxito
         setToastMessage(`¡Bienvenido ${response.data.user.name}!`);
@@ -86,11 +113,8 @@ function Login() {
   };
 
   return (
-    // --- MODIFICACIÓN AQUÍ ---
-    // Añadimos el style en línea para el 'backgroundImage' de fallback.
-    // El navegador buscará esta imagen en la carpeta 'public'.
     <div className="login-page">
-      
+
       {/* Toast Component */}
       <Toast 
         show={showToast}

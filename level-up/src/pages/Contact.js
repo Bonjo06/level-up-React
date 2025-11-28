@@ -7,7 +7,7 @@ import Toast from '../components/Toast';
 import axiosInstance from '../config/axiosConfig';
 
 function Contact() {
-  // 1. Estados para cada campo del formulario
+  // Estados para cada campo del formulario
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [subject, setSubject] = useState('');
@@ -17,17 +17,17 @@ function Contact() {
   // Estados para el Toast
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
-  const [toastType, setToastType] = useState('success'); // 'success' o 'error'
+  const [toastType, setToastType] = useState('success'); 
   
   // Verificar si hay un usuario logueado al cargar (para pre-llenar el email)
   useEffect(() => {
     const loggedUserEmail = localStorage.getItem('UsuarioLogeado');
     if (loggedUserEmail) {
-      setEmail(loggedUserEmail); // Pre-llenar el campo email
+      setEmail(loggedUserEmail); 
     }
   }, []);
 
-  // 3. Validación mejorada
+  // Validación mejorada
   const validateForm = () => {
     const newErrors = {};
     
@@ -55,7 +55,7 @@ function Contact() {
     return Object.keys(newErrors).length === 0;
   };
 
-  // 4. Función que se ejecuta al presionar "Enviar"
+  // Función que se ejecuta al presionar "Enviar"
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -72,9 +72,8 @@ function Contact() {
         message: message
       });
 
-      console.log('Respuesta del servidor:', response); // Para debug
+      console.log('Respuesta del servidor:', response); 
       
-      // Si llegó aquí sin errores, el mensaje se envió correctamente
       // Mostrar toast de éxito
       setToastMessage('¡Mensaje enviado correctamente! Te responderemos pronto.');
       setToastType('success');

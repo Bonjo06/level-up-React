@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axiosInstance from '../config/axiosConfig';
-import './Login.css'; // Reutilizamos los estilos del video
+import './Login.css'; 
 import Toast from '../components/Toast';
 
 function Register() {

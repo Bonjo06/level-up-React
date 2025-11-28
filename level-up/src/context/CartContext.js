@@ -1,10 +1,10 @@
 import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 import axiosInstance from '../config/axiosConfig';
 
-// 1. Creamos el Contexto
+// Contexto
 const CartContext = createContext();
 
-// 2. Creamos un "Hook" personalizado para usar el contexto fácilmente
+// "Hook" personalizado para usar el contexto fácilmente
 export const useCart = () => {
   return useContext(CartContext);
 };
@@ -12,7 +12,7 @@ export const useCart = () => {
 // Base URL del backend
 const API_BASE_URL = '/api/cart';
 
-// 3. Creamos el Proveedor (Provider) que manejará la lógica
+// Proveedor que manejará la lógica
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]); 
   const [loading, setLoading] = useState(false);
@@ -54,7 +54,6 @@ export const CartProvider = ({ children }) => {
         // Si items está directamente en el objeto
         items = response.data.items;
       } else if (response.data._embedded?.items) {
-        // Formato HAL
         items = response.data._embedded.items;
       }
       
@@ -73,7 +72,7 @@ export const CartProvider = ({ children }) => {
           itemTitle: item.productTitle,
           itemPrice: item.unitPrice,
           itemQuantity: item.product?.itemQuantity || 999,
-          itemImageLink: item.product?.itemImageLink || item.product?.itemImage, // Usar itemImageLink
+          itemImageLink: item.product?.itemImageLink || item.product?.itemImage, 
           cantidad: item.quantity
         };
       });
@@ -111,7 +110,7 @@ export const CartProvider = ({ children }) => {
         previousEmail = currentEmail;
         loadCart(); // Recargar carrito del nuevo usuario
       }
-    }, 500); // Revisar cada medio segundo
+    }, 500); 
     
     return () => clearInterval(checkUserChange);
   }, [loadCart]);
@@ -135,7 +134,7 @@ export const CartProvider = ({ children }) => {
     try {
       setLoading(true);
       
-      // Obtener el ID del producto (puede ser 'id' o 'itemId')
+      // Obtener el ID del producto 
       const productId = product.id || product.itemId;
       
       if (!productId) {
@@ -145,7 +144,6 @@ export const CartProvider = ({ children }) => {
         return;
       }
       
-      // Validar stock antes de enviar
       const stockNumber = parseInt(product.itemQuantity) || 0;
       const existingItem = cartItems.find(item => item.itemTitle === product.itemTitle);
       
@@ -286,7 +284,7 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  // 4. Compartimos el estado y las funciones con todos los "children"
+  // estado y funciones con todos los "children"
   const value = {
     cartItems,
     addToCart,
@@ -295,7 +293,7 @@ export const CartProvider = ({ children }) => {
     clearCart,
     cartNotification,
     loading,
-    loadCart // Exportar para poder recargar manualmente si es necesario
+    loadCart 
   };
 
   return (

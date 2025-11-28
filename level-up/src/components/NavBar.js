@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from '../context/CartContext';
 import { ShoppingCartIcon } from './FeatureIcons';
-import productsData from '../data/ProductsData';
+import axiosInstance from '../config/axiosConfig';
 
 function Navbar() {
 
@@ -18,6 +18,7 @@ function Navbar() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [showResults, setShowResults] = useState(false);
+  const [availableProducts, setAvailableProducts] = useState([]);
   const searchRef = useRef(null);
 
   // Estados para el modal
@@ -28,25 +29,22 @@ function Navbar() {
   useEffect(() => {
     // Revisa si existe "UsuarioLogeado" en localStorage
     const userEmail = localStorage.getItem('UsuarioLogeado'); 
+    const userName = localStorage.getItem('UsuarioNombre');
+    
     if (userEmail) {
-      // Obtener usuarios registrados
-      const usuarios = JSON.parse(localStorage.getItem('usuarios') || '[]');
-      // Buscar el usuario por email
-      const usuario = usuarios.find(user => user.email === userEmail);
-      // Si existe el usuario, usamos su nombre; si no, usamos el email
-      setCurrentUser(usuario ? usuario.name : userEmail);
+      // Si existe el nombre guardado, usarlo; si no, usar el email
+      setCurrentUser(userName || userEmail);
     } else {
-      // Asegúrate de limpiar el estado si no hay usuario
       setCurrentUser(null);
     }
 
     // Listener para sincronizar entre pestañas
     const handleStorageChange = () => {
       const userEmail = localStorage.getItem('UsuarioLogeado');
+      const userName = localStorage.getItem('UsuarioNombre');
+      
       if (userEmail) {
-        const usuarios = JSON.parse(localStorage.getItem('usuarios') || '[]');
-        const usuario = usuarios.find(user => user.email === userEmail);
-        setCurrentUser(usuario ? usuario.name : userEmail);
+        setCurrentUser(userName || userEmail);
       } else {
         setCurrentUser(null);
       }
@@ -56,8 +54,6 @@ function Navbar() {
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
-  // ----- MODIFICACIÓN AQUÍ -----
-  // Cambiamos '[]' por '[location]'
   }, [location]); 
 
   // Función para buscar productos en tiempo real
@@ -67,15 +63,48 @@ function Navbar() {
       setShowResults(false);
       return;
     }
-
-    const allProducts = Object.values(productsData).flat();
+    const allProducts = Array.isArray(availableProducts) ? availableProducts : [];
     const filtered = allProducts.filter(product =>
-      product.titulo.toLowerCase().includes(searchQuery.toLowerCase())
-    ).slice(0, 5); // Limitar a 5 resultados
-
+      (product.titulo || '').toString().toLowerCase().includes(searchQuery.toLowerCase())
+    ).slice(0, 5);
     setSearchResults(filtered);
     setShowResults(filtered.length > 0);
-  }, [searchQuery]);
+  }, [searchQuery, availableProducts]);
+
+  // Cargar productos desde el backend para la búsqueda rápida
+  useEffect(() => {
+    let mounted = true;
+    const fetchProducts = async () => {
+      try {
+        const res = await axiosInstance.get('/api/inventario');
+        let list = [];
+        if (res.data && res.data._embedded && res.data._embedded.inventarioList) {
+          list = res.data._embedded.inventarioList;
+        } else if (Array.isArray(res.data)) {
+          list = res.data;
+        } else if (res.data && res.data.content && Array.isArray(res.data.content)) {
+          list = res.data.content;
+        } else if (res.data && res.data._embedded && res.data._embedded.inventario) {
+          list = res.data._embedded.inventario;
+        }
+
+        const normalized = list.map(p => ({
+          titulo: p.itemTitle || p.titulo || p.title || p.name || '',
+          imagen: p.itemImageLink || p.itemImage || p.imagen || '',
+          precio: p.itemPrice || p.precio || 0,
+          stock: p.itemQuantity || p.stock || 0,
+          descripcion: p.itemDescription || p.descripcion || ''
+        }));
+
+        if (mounted) setAvailableProducts(normalized);
+      } catch (err) {
+        console.error('Error cargando productos para la búsqueda rápida:', err);
+      }
+    };
+
+    fetchProducts();
+    return () => { mounted = false; };
+  }, []);
 
   // Cerrar resultados al hacer clic fuera
   useEffect(() => {
@@ -126,7 +155,7 @@ function Navbar() {
     >
       <div className="container">
         <Link className="nav-link" to="/">
-          <h3>Level-up Gamer</h3>
+          <h3>Level-Up Gamer</h3>
         </Link>
 
         <button
@@ -233,7 +262,6 @@ function Navbar() {
               <Link className="nav-link d-flex align-items-center" to="/carrito">
                 <ShoppingCartIcon size={20} color="#0d6efd" />
                 <span className="ms-1">Carrito</span>
-                {/* Muestra un contador si hay items */}
                 {cartItems.length > 0 && (
                   <span className="badge rounded-pill bg-primary ms-1">
                     {cartItems.length}
@@ -241,9 +269,6 @@ function Navbar() {
                 )}
               </Link>
             </li>
-            {/* --- FIN BARRA DE BÚSQUEDA --- */}
-
-            {/* Lógica condicional (esta ya la tenías bien) */}
             {currentUser ? (
               // Si hay un usuario logueado
               <>
@@ -259,7 +284,7 @@ function Navbar() {
                 </li>
               </>
             ) : (
-              // Si NO hay usuario (invitado)
+              // Si no hay usuario logeado
               <li className="nav-item">
                 <Link className="btn btn-primary ms-lg-3" to="/iniciarsesion">
                   Iniciar sesión
@@ -270,7 +295,6 @@ function Navbar() {
         </div>
       </div>
 
-      {/* Modal de producto */}
       <AnimatePresence>
               {modalVisible && selectedProduct && (
                 <motion.div
