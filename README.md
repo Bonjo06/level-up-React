@@ -93,65 +93,6 @@ TRANSBANK_COMMERCE_CODE=597055555532
 TRANSBANK_API_KEY=579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C
 ```
 
-### 4. Configurar Base de Datos
-
-Ejecutar el siguiente script SQL en MySQL:
-
-```sql
-CREATE DATABASE IF NOT EXISTS levelup;
-USE levelup;
-
-CREATE TABLE users (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    role VARCHAR(50) DEFAULT 'USER'
-);
-
-CREATE TABLE inventario (
-    item_id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    item_title VARCHAR(255) NOT NULL,
-    item_description TEXT,
-    item_price DECIMAL(10,2) NOT NULL,
-    item_quantity INT NOT NULL,
-    item_category VARCHAR(255),
-    item_image_link TEXT
-);
-
--- Más tablas según necesidad (cart, purchase_order, etc.)
-```
-
-## 🎯 Comandos
-
-### Frontend (React)
-```bash
-cd level-up
-
-# Iniciar en desarrollo
-npm start
-
-# Construir para producción
-npm run build
-
-# Ejecutar tests con Karma
-npm run test:karma
-
-# Ejecutar tests con Jest
-npm test
-```
-
-### Backend de Pagos (Node.js)
-```bash
-cd level-up/backend
-
-# Iniciar servidor
-npm start
-
-# Iniciar con nodemon (desarrollo)
-npm run dev
-```
-
 
 *El usuario admin se crea automáticamente al iniciar la aplicación si no existe.*
 
