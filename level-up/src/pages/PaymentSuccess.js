@@ -25,7 +25,6 @@ function PaymentSuccess() {
         // Actualizar el estado de la orden a PAID
         axiosInstance.patch(`/purchase-orders/${pendingOrderId}/status?status=PAID`)
         .then(response => {
-          console.log('✅ Estado de orden actualizado a PAID');
           localStorage.removeItem('pendingOrderId');
           localStorage.removeItem('purchasedProducts');
           

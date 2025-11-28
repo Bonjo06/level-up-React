@@ -41,7 +41,7 @@ export const CartProvider = ({ children }) => {
       setLoading(true);
       const response = await axiosInstance.get(API_BASE_URL);
       
-      console.log('🛒 Respuesta completa del carrito:', response.data);
+
       
       // El backend devuelve un objeto Cart con items dentro
       let items = [];
@@ -57,8 +57,7 @@ export const CartProvider = ({ children }) => {
         items = response.data._embedded.items;
       }
       
-      console.log('📦 Items del carrito extraídos:', items);
-      console.log('📦 Cantidad de items:', items.length);
+
       
       if (!Array.isArray(items)) {
         console.error('⚠️ Items no es un array:', items);
@@ -66,7 +65,6 @@ export const CartProvider = ({ children }) => {
       }
       
       const transformedItems = items.map(item => {
-        console.log('🔄 Transformando item:', item);
         return {
           itemId: item.product?.id || item.product?.itemId,
           itemTitle: item.productTitle,
@@ -76,9 +74,6 @@ export const CartProvider = ({ children }) => {
           cantidad: item.quantity
         };
       });
-      
-      console.log('✅ Items transformados:', transformedItems);
-      console.log('✅ Total items transformados:', transformedItems.length);
       
       setCartItems(transformedItems);
     } catch (error) {
@@ -106,7 +101,6 @@ export const CartProvider = ({ children }) => {
       
       // Si el email cambió (login, logout o cambio de cuenta)
       if (currentEmail !== previousEmail) {
-        console.log('👤 Usuario cambió de:', previousEmail, 'a:', currentEmail);
         previousEmail = currentEmail;
         loadCart(); // Recargar carrito del nuevo usuario
       }
@@ -159,7 +153,6 @@ export const CartProvider = ({ children }) => {
         return;
       }
 
-      console.log('Enviando al backend - ProductId:', productId, 'UserEmail:', userEmail);
 
       // Llamar al backend para añadir el producto
       await axiosInstance.post(`${API_BASE_URL}/add`, {
