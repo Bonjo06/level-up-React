@@ -13,6 +13,10 @@
 
 # Datos
 /config/apiConfig.json
+/src/config/apiConfig.js
+
+# Backend
+/backend/.env
 
 # misc
 .DS_Store
