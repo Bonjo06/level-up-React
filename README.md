@@ -118,3 +118,37 @@ TRANSBANK_API_KEY=579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B
 El proyecto está desplegado en AWS EC2 con PM2 para gestión de procesos. Los servicios se inician automáticamente al arrancar la instancia.
 
 
+## 📖 Manual de Usuario
+
+### Para Clientes
+
+1. **Registro e Inicio de Sesión**
+   - Ingrese al apartado "Iniciar Sesión" para acceder a todas las funcionalidades
+   - Si no tiene cuenta, puede registrarse con su correo electrónico
+
+2. **Explorar y Comprar Productos**
+   - Navegue por el catálogo de productos gaming
+   - Agregue productos al carrito de compras
+   - Revise su carrito y ajuste las cantidades según necesite
+
+3. **Proceso de Pago**
+   - Dentro del carrito, presione el botón **"Proceder al pago"**
+   - Será redirigido a WebPay Plus (entorno de pruebas de Transbank)
+   - Use una de las [tarjetas de prueba de Transbank](https://www.transbankdevelopers.cl/documentacion/como_empezar#tarjetas-de-prueba)
+   - Complete el proceso de pago
+   - Recibirá una confirmación del estado de su compra (exitosa, fallida o error)
+
+### Para Administradores
+
+1. **Acceso al Panel de Administración**
+   - Inicie sesión con credenciales de administrador
+
+2. **Gestión de Inventario**
+   - Agregue nuevos productos al catálogo
+   - Edite información de productos existentes (nombre, precio, stock, imagen)
+   - Elimine productos del inventario
+   - Soporte para imágenes Base64 o URLs
+
+3. **Gestión de Usuarios**
+   - Visualice la lista completa de usuarios registrados
+   - Consulte información de roles y permisos
