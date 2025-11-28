@@ -93,65 +93,6 @@ TRANSBANK_COMMERCE_CODE=597055555532
 TRANSBANK_API_KEY=579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C
 ```
 
-### 4. Configurar Base de Datos
-
-Ejecutar el siguiente script SQL en MySQL:
-
-```sql
-CREATE DATABASE IF NOT EXISTS levelup;
-USE levelup;
-
-CREATE TABLE users (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    role VARCHAR(50) DEFAULT 'USER'
-);
-
-CREATE TABLE inventario (
-    item_id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    item_title VARCHAR(255) NOT NULL,
-    item_description TEXT,
-    item_price DECIMAL(10,2) NOT NULL,
-    item_quantity INT NOT NULL,
-    item_category VARCHAR(255),
-    item_image_link TEXT
-);
-
--- Más tablas según necesidad (cart, purchase_order, etc.)
-```
-
-## 🎯 Comandos
-
-### Frontend (React)
-```bash
-cd level-up
-
-# Iniciar en desarrollo
-npm start
-
-# Construir para producción
-npm run build
-
-# Ejecutar tests con Karma
-npm run test:karma
-
-# Ejecutar tests con Jest
-npm test
-```
-
-### Backend de Pagos (Node.js)
-```bash
-cd level-up/backend
-
-# Iniciar servidor
-npm start
-
-# Iniciar con nodemon (desarrollo)
-npm run dev
-```
-
 
 *El usuario admin se crea automáticamente al iniciar la aplicación si no existe.*
 
@@ -177,3 +118,37 @@ npm run dev
 El proyecto está desplegado en AWS EC2 con PM2 para gestión de procesos. Los servicios se inician automáticamente al arrancar la instancia.
 
 
+## 📖 Manual de Usuario
+
+### Para Clientes
+
+1. **Registro e Inicio de Sesión**
+   - Ingrese al apartado "Iniciar Sesión" para acceder a todas las funcionalidades
+   - Si no tiene cuenta, puede registrarse con su correo electrónico
+
+2. **Explorar y Comprar Productos**
+   - Navegue por el catálogo de productos gaming
+   - Agregue productos al carrito de compras
+   - Revise su carrito y ajuste las cantidades según necesite
+
+3. **Proceso de Pago**
+   - Dentro del carrito, presione el botón **"Proceder al pago"**
+   - Será redirigido a WebPay Plus (entorno de pruebas de Transbank)
+   - Use una de las [tarjetas de prueba de Transbank](https://www.transbankdevelopers.cl/documentacion/como_empezar#tarjetas-de-prueba)
+   - Complete el proceso de pago
+   - Recibirá una confirmación del estado de su compra (exitosa, fallida o error)
+
+### Para Administradores
+
+1. **Acceso al Panel de Administración**
+   - Inicie sesión con credenciales de administrador
+
+2. **Gestión de Inventario**
+   - Agregue nuevos productos al catálogo
+   - Edite información de productos existentes (nombre, precio, stock, imagen)
+   - Elimine productos del inventario
+   - Soporte para imágenes Base64 o URLs
+
+3. **Gestión de Usuarios**
+   - Visualice la lista completa de usuarios registrados
+   - Consulte información de roles y permisos
