@@ -17,6 +17,8 @@ import PaymentSuccess from './pages/PaymentSuccess';
 import PaymentFailed from './pages/PaymentFailed';
 import PaymentError from './pages/PaymentError';
 import Administration from './pages/Administration';
+import AdministrationUsers from './pages/AdministrationUsers';
+import AdministrationContact from './pages/AdministrationContact';
 
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -24,7 +26,11 @@ import { initializeAdmin } from './utils/initializeAdmin';
 
 function AppContent() {
   const location = useLocation();
-  const isAdminPage = location.pathname === '/administracion';
+  const isAdminPage = (
+  location.pathname === '/administracion' ||
+  location.pathname === '/administracion/usuarios' ||
+  location.pathname === '/administracion/contacto'
+);
 
   return (
     <>
@@ -48,6 +54,22 @@ function AppContent() {
             element={
               <ProtectedRoute>
                 <Administration />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/administracion/usuarios" 
+            element={
+              <ProtectedRoute>
+                <AdministrationUsers />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/administracion/contacto" 
+            element={
+              <ProtectedRoute>
+                <AdministrationContact />
               </ProtectedRoute>
             } 
           />

@@ -64,13 +64,44 @@ function Contact() {
     }
 
     try {
-      // Llamar al backend de Spring Boot (el token JWT se envía automáticamente)
-      const response = await axiosInstance.post('/api/contact-messages', {
+      // Obtener el usuario autenticado desde localStorage (ajusta si usas Context)
+      const userRaw = localStorage.getItem('usuarioAutenticado') || localStorage.getItem('UsuarioLogeado');
+      let userId = null;
+      if (userRaw) {
+        try {
+          const userObj = JSON.parse(userRaw);
+          if (userObj && userObj.id) userId = Number(userObj.id);
+        } catch (e) {
+          if (!isNaN(userRaw)) userId = Number(userRaw);
+        }
+      }
+
+      // Log para depuración
+      console.log('userId enviado:', userId, 'typeof:', typeof userId);
+      // Obtiene el email del usuario logueado
+      let userEmail = email;
+      if (userRaw) {
+        try {
+          const userObj = JSON.parse(userRaw);
+          if (userObj && userObj.email) userEmail = userObj.email;
+        } catch (e) {
+          if (typeof userRaw === 'string' && userRaw.includes('@')) userEmail = userRaw;
+        }
+      }
+
+      // Construye el body, incluye user_email para que el backend lo asocie
+      const body = {
         name: name,
-        email: email,      
+        email: email,
         subject: subject,
-        message: message
-      });
+        message: message,
+        user_email: userEmail
+      };
+
+      console.log('Body enviado:', body);
+
+      // Llamar al backend de Spring Boot (el token JWT se envía automáticamente)
+      const response = await axiosInstance.post('/api/contact-messages', body);
 
       console.log('Respuesta del servidor:', response); 
       
@@ -155,13 +186,13 @@ function Contact() {
                       <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                       <circle cx="12" cy="7" r="4"></circle>
                     </svg>
-                    Nombre Completo
+                    Nombre
                   </label>
                   <input
                     type="text"
                     className={`form-control bg-dark text-white border-secondary contact-input ${errors.name ? 'is-invalid' : ''}`}
                     id="name"
-                    placeholder="Ej: Juan Pérez"
+                    placeholder="Tu nombre"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                   />
