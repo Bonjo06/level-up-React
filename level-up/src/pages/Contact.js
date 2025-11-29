@@ -90,18 +90,18 @@ function Contact() {
       }
 
       // Construye el body, incluye user_email para que el backend lo asocie
-      const body = {
+      const response = await axiosInstance.post(
+      '/api/contact-messages',
+      {
         name: name,
         email: email,
         subject: subject,
-        message: message,
-        user_email: userEmail
-      };
-
-      console.log('Body enviado:', body);
-
-      // Llamar al backend de Spring Boot (el token JWT se envía automáticamente)
-      const response = await axiosInstance.post('/api/contact-messages', body);
+        message: message
+      },
+      {
+        params: { userEmail: userEmail } // aquí va el email del usuario logueado
+      }
+      );
 
       console.log('Respuesta del servidor:', response); 
       
