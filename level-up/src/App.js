@@ -27,14 +27,14 @@ import { initializeAdmin } from './utils/initializeAdmin';
 function AppContent() {
   const location = useLocation();
   const isAdminPage = (
-  location.pathname === '/administracion' ||
-  location.pathname === '/administracion/usuarios' ||
-  location.pathname === '/administracion/contacto'
-);
+    location.pathname === '/administracion' ||
+    location.pathname === '/administracion/usuarios' ||
+    location.pathname === '/administracion/contacto'
+  );
 
   return (
     <>
-      {!isAdminPage && <Navbar />}
+      {<Navbar />}
       
       {/* Rutas de la aplicación */}
       <main>
@@ -76,8 +76,7 @@ function AppContent() {
         </Routes>
       </main>
       
-      {/* Mostrar Footer solo si NO está en la página de administración */}
-      {!isAdminPage && <Footer />}
+      {<Footer />}
     </>
   );
 }

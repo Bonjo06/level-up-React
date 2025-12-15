@@ -291,7 +291,7 @@ function Administration() {
                 ) : (
                   <div className="table-responsive">
                     <table className="table table-hover">
-                      <thead className="table-light">
+                      <thead>
                         <tr>
                           <th>ID</th>
                           <th>Nombre</th>
@@ -346,8 +346,6 @@ function Administration() {
           </div>
         </div>
       </div>
-
-        
 
       {/* Modal para agregar/editar producto */}
       {showModal && (
