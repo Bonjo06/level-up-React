@@ -16,8 +16,8 @@ axiosInstance.interceptors.request.use(
     const token = localStorage.getItem('adminToken') || localStorage.getItem('authToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
-      console.log('🔐 Enviando petición con Authorization header:', config.method.toUpperCase(), config.url);
-      console.log('🔑 Token (primeros 30 caracteres):', token.substring(0, 30));
+      console.log('Enviando petición con Authorization header:', config.method.toUpperCase(), config.url);
+      console.log('Token (primeros 30 caracteres):', token.substring(0, 30));
     } else {
       console.warn('⚠️ No hay token disponible para:', config.method.toUpperCase(), config.url);
     }

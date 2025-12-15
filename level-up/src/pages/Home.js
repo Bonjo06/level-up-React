@@ -87,9 +87,6 @@ function Home() {
         setIsLoading(true);
 
         const response = await axiosInstance.get('/api/inventario');
-
-        console.log('📦 Datos recibidos del backend:', response.data);
-
         
         // Extraer los productos de la estructura HAL de Spring Boot
         let productsList = [];
@@ -105,11 +102,9 @@ function Home() {
           productsList = response.data.content;
         }
 
-        console.log('Lista de productos:', productsList);
 
         // Agrupar productos por categoría
         const grouped = groupProductsByCategory(productsList);
-        console.log('Productos agrupados:', grouped);
         
         setProductsData(grouped);
         setIsLoading(false);

@@ -47,8 +47,6 @@ function Register() {
         password: password
       });
 
-      console.log('Respuesta del servidor:', response.data);
-
       if (response.data.success) {
         // Guardar el token JWT
         localStorage.setItem('authToken', response.data.token);
