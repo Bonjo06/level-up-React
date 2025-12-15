@@ -1,7 +1,11 @@
 // Centralizar las direcciones base de los servicios API.
 
-export const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://34.201.202.181:8080';
-export const PAYMENT_BASE_URL = process.env.REACT_APP_PAYMENT_URL || 'http://34.201.202.181:5000';
+// export const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://34.201.202.181:8080';
+// export const PAYMENT_BASE_URL = process.env.REACT_APP_PAYMENT_URL || 'http://34.201.202.181:5000';
+
+
+export const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+export const PAYMENT_BASE_URL = process.env.REACT_APP_PAYMENT_URL || 'http://localhost:5000';
 
 const config = {
   API_BASE_URL,
