@@ -23,19 +23,27 @@ export const AuthProvider = ({ children }) => {
     
     if (adminToken && adminData) {
       setIsAdmin(true);
+      setIsAuthenticated(true);
       setUser(JSON.parse(adminData));
       setLoading(false);
       return; 
     }
-    // Si es admin, no necesitamos verificar usuario normal
 
     // Verificar si hay un usuario normal logueado
     const authToken = localStorage.getItem('authToken');
     const userName = localStorage.getItem('UsuarioNombre');
+    const userEmail = localStorage.getItem('UsuarioLogeado');
     
     if (authToken && userName) {
+      // Asegurar que isAdmin esté en false para usuarios normales
+      setIsAdmin(false);
       setIsAuthenticated(true);
-      setUser({ name: userName });
+      setUser({ name: userName, email: userEmail });
+    } else {
+      // No hay ningún usuario logueado
+      setIsAdmin(false);
+      setIsAuthenticated(false);
+      setUser(null);
     }
     
     setLoading(false);
@@ -44,10 +52,21 @@ export const AuthProvider = ({ children }) => {
 
   const loginAsAdmin = (adminData, token) => {
     setIsAdmin(true);
+    setIsAuthenticated(true);
     setUser(adminData);
     // Guardar el token JWT real del backend
     localStorage.setItem('adminToken', token);
     localStorage.setItem('adminData', JSON.stringify(adminData));
+  };
+
+  const loginAsUser = (userData, token) => {
+    // Asegurar que isAdmin esté en false
+    setIsAdmin(false);
+    setIsAuthenticated(true);
+    setUser(userData);
+    // Limpiar cualquier token de admin previo
+    localStorage.removeItem('adminToken');
+    localStorage.removeItem('adminData');
   };
 
   const logout = () => {
@@ -69,6 +88,7 @@ export const AuthProvider = ({ children }) => {
         user,
         loading,
         loginAsAdmin,
+        loginAsUser,
         logout,
         setIsAuthenticated,
         setUser

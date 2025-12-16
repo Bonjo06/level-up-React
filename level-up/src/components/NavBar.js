@@ -12,7 +12,7 @@ function Navbar() {
   const [currentUser, setCurrentUser] = useState(null);
   const navigate = useNavigate();
   const { cartItems, addToCart } = useCart();
-  const { isAdmin } = useAuth();
+  const { isAdmin, logout: authLogout } = useAuth();
 
   const location = useLocation();
 
@@ -122,8 +122,7 @@ function Navbar() {
 
   // Función para manejar el "Cerrar Sesión"
   const handleLogout = () => {
-    localStorage.removeItem('UsuarioLogeado');
-    localStorage.removeItem('authToken');
+    authLogout();
     setCurrentUser(null);
     navigate('/iniciarsesion', { state: { message: 'Sesión cerrada exitosamente' } });
   };

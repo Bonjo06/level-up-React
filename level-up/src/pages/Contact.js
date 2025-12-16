@@ -66,18 +66,7 @@ function Contact() {
     try {
       // Obtener el usuario autenticado desde localStorage (ajusta si usas Context)
       const userRaw = localStorage.getItem('usuarioAutenticado') || localStorage.getItem('UsuarioLogeado');
-      let userId = null;
-      if (userRaw) {
-        try {
-          const userObj = JSON.parse(userRaw);
-          if (userObj && userObj.id) userId = Number(userObj.id);
-        } catch (e) {
-          if (!isNaN(userRaw)) userId = Number(userRaw);
-        }
-      }
-
-      // Log para depuración
-      console.log('userId enviado:', userId, 'typeof:', typeof userId);
+      
       // Obtiene el email del usuario logueado
       let userEmail = email;
       if (userRaw) {
@@ -90,7 +79,7 @@ function Contact() {
       }
 
       // Construye el body, incluye user_email para que el backend lo asocie
-      const response = await axiosInstance.post(
+      await axiosInstance.post(
       '/api/contact-messages',
       {
         name: name,
@@ -102,8 +91,6 @@ function Contact() {
         params: { userEmail: userEmail } // aquí va el email del usuario logueado
       }
       );
-
-      console.log('Respuesta del servidor:', response); 
       
       // Mostrar toast de éxito
       setToastMessage('¡Mensaje enviado correctamente! Te responderemos pronto.');
