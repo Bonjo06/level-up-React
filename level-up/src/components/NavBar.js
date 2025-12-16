@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import { ShoppingCartIcon } from './FeatureIcons';
 import axiosInstance from '../config/axiosConfig';
 
@@ -11,6 +12,7 @@ function Navbar() {
   const [currentUser, setCurrentUser] = useState(null);
   const navigate = useNavigate();
   const { cartItems, addToCart } = useCart();
+  const { isAdmin, logout: authLogout } = useAuth();
 
   const location = useLocation();
 
@@ -120,8 +122,7 @@ function Navbar() {
 
   // Función para manejar el "Cerrar Sesión"
   const handleLogout = () => {
-    localStorage.removeItem('UsuarioLogeado');
-    localStorage.removeItem('authToken');
+    authLogout();
     setCurrentUser(null);
     navigate('/iniciarsesion', { state: { message: 'Sesión cerrada exitosamente' } });
   };
@@ -277,6 +278,14 @@ function Navbar() {
                     Bienvenido, {currentUser}
                   </span>
                 </li>
+                {isAdmin && (
+                  <li className="nav-item ms-lg-2">
+                    <Link to="/administracion" className="btn btn-outline-warning btn-sm">
+                      <i className="bi bi-shield-lock me-1"></i>
+                      Panel Admin
+                    </Link>
+                  </li>
+                )}
                 <li className="nav-item ms-lg-2">
                   <button className="btn btn-outline-danger btn-sm" onClick={handleLogout}>
                     Cerrar Sesión

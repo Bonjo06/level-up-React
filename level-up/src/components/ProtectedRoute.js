@@ -17,8 +17,8 @@ const ProtectedRoute = ({ children }) => {
   }
 
   if (!isAdmin) {
-    // Redirigir al login si no es administrador
-    return <Navigate to="/iniciarsesion" replace />;
+    // Redirigir a la página de inicio si no es administrador
+    return <Navigate to="/" replace />;
   }
 
   return children;

@@ -64,15 +64,33 @@ function Contact() {
     }
 
     try {
-      // Llamar al backend de Spring Boot (el token JWT se envía automáticamente)
-      const response = await axiosInstance.post('/api/contact-messages', {
+      // Obtener el usuario autenticado desde localStorage (ajusta si usas Context)
+      const userRaw = localStorage.getItem('usuarioAutenticado') || localStorage.getItem('UsuarioLogeado');
+      
+      // Obtiene el email del usuario logueado
+      let userEmail = email;
+      if (userRaw) {
+        try {
+          const userObj = JSON.parse(userRaw);
+          if (userObj && userObj.email) userEmail = userObj.email;
+        } catch (e) {
+          if (typeof userRaw === 'string' && userRaw.includes('@')) userEmail = userRaw;
+        }
+      }
+
+      // Construye el body, incluye user_email para que el backend lo asocie
+      await axiosInstance.post(
+      '/api/contact-messages',
+      {
         name: name,
-        email: email,      
+        email: email,
         subject: subject,
         message: message
-      });
-
-      console.log('Respuesta del servidor:', response); 
+      },
+      {
+        params: { userEmail: userEmail } // aquí va el email del usuario logueado
+      }
+      );
       
       // Mostrar toast de éxito
       setToastMessage('¡Mensaje enviado correctamente! Te responderemos pronto.');
@@ -155,13 +173,13 @@ function Contact() {
                       <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                       <circle cx="12" cy="7" r="4"></circle>
                     </svg>
-                    Nombre Completo
+                    Nombre
                   </label>
                   <input
                     type="text"
                     className={`form-control bg-dark text-white border-secondary contact-input ${errors.name ? 'is-invalid' : ''}`}
                     id="name"
-                    placeholder="Ej: Juan Pérez"
+                    placeholder="Tu nombre"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                   />

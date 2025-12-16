@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 
 import Navbar from './components/NavBar';
@@ -23,12 +23,9 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { initializeAdmin } from './utils/initializeAdmin';
 
 function AppContent() {
-  const location = useLocation();
-  const isAdminPage = location.pathname === '/administracion';
-
   return (
     <>
-      {!isAdminPage && <Navbar />}
+      {<Navbar />}
       
       {/* Rutas de la aplicación */}
       <main>
@@ -54,8 +51,7 @@ function AppContent() {
         </Routes>
       </main>
       
-      {/* Mostrar Footer solo si NO está en la página de administración */}
-      {!isAdminPage && <Footer />}
+      {<Footer />}
     </>
   );
 }

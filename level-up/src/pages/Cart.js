@@ -78,7 +78,6 @@ function Cart() {
 
     try {
       // Crear la orden en la base de datos
-      console.log('Items en el carrito:', cartItems);
       // Preparar los items de la orden
       const orderItems = cartItems.map(item => {
         return {

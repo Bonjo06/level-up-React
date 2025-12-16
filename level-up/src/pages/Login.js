@@ -11,7 +11,7 @@ function Login() {
   const navigate = useNavigate();
   const location = useLocation();
   const hasShownAlertRef = useRef(false);
-  const { loginAsAdmin, setIsAuthenticated, setUser } = useAuth();
+  const { loginAsAdmin, loginAsUser } = useAuth();
   
   // Estados para el Toast
   const [showToast, setShowToast] = useState(false);
@@ -81,8 +81,13 @@ function Login() {
         }
         
         // Usuario normal
-        setIsAuthenticated(true);
-        setUser(response.data.user);
+        const userData = {
+          email: response.data.user.email,
+          name: response.data.user.name,
+          role: 'user'
+        };
+        
+        loginAsUser(userData, response.data.token);
         
         // Mostrar toast de éxito
         setToastMessage(`¡Bienvenido ${response.data.user.name}!`);
